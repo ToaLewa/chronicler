@@ -103,6 +103,11 @@ fn should_update_headers(args: impl IntoIterator<Item = String>) -> bool {
 
 fn update_headers(journal_directory: impl AsRef<Path>) -> io::Result<()> {
     let md_files = list_mds(journal_directory)?;
+
+    if md_files.is_empty() {
+        return Err(io::Error::new(ErrorKind::NotFound, "No .md files found"));
+    }
+
     Ok(for file_path in md_files {
         println!("Processing: {}", file_path.display());
         add_header(&file_path)?;
