@@ -22,9 +22,9 @@ pub fn list_mds(path: impl AsRef<std::path::Path>) -> std::io::Result<Vec<std::p
 
 impl std::fmt::Display for Header {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "---\nprev: {}", self.prev)?;
+        write!(f, "---\nprev: \"{}\"", self.prev)?;
         if let Some(journal) = &self.journal {
-            write!(f, "\njournal: {}", journal)?;
+            write!(f, "\njournal: \"{}\"", journal)?;
         }
         write!(f, "\n---")
     }
@@ -49,7 +49,12 @@ pub fn parse_header(header: &str) -> Option<Header> {
 
         let (key, value) = trimmed.split_once(':')?;
         let key = key.trim();
-        let value = value.trim().to_string();
+        let value = value.trim();
+        let value = value
+            .strip_prefix('"')
+            .and_then(|inner| inner.strip_suffix('"'))
+            .unwrap_or(value)
+            .to_string();
 
         match key {
             "prev" => {
@@ -127,13 +132,13 @@ mod tests {
 
         assert_eq!(
             header.to_string(),
-            "---\nprev: yesterday-note\njournal: daily-log\n---"
+            "---\nprev: \"yesterday-note\"\njournal: \"daily-log\"\n---"
         );
     }
 
     #[test]
     fn parse_header_reads_prev_and_journal() {
-        let parsed = parse_header("prev: yesterday-note\njournal: daily-log");
+        let parsed = parse_header("prev: \"yesterday-note\"\njournal: \"daily-log\"");
 
         assert!(parsed.is_some());
         let header = parsed.unwrap();
@@ -143,7 +148,7 @@ mod tests {
 
     #[test]
     fn parse_header_ignores_unknown_keys() {
-        let parsed = parse_header("prev: yesterday-note\nfoo: bar\njournal: daily-log");
+        let parsed = parse_header("prev: \"yesterday-note\"\nfoo: bar\njournal: \"daily-log\"");
 
         assert!(parsed.is_some());
         let header = parsed.unwrap();
@@ -153,12 +158,12 @@ mod tests {
 
     #[test]
     fn parse_header_returns_none_when_prev_missing() {
-        assert!(parse_header("journal: daily-log").is_none());
+        assert!(parse_header("journal: \"daily-log\"").is_none());
     }
 
     #[test]
     fn parse_header_allows_missing_optional_journal() {
-        let parsed = parse_header("prev: yesterday-note");
+        let parsed = parse_header("prev: \"yesterday-note\"");
 
         assert!(parsed.is_some());
         let header = parsed.unwrap();
@@ -168,18 +173,22 @@ mod tests {
 
     #[test]
     fn parse_header_returns_none_for_malformed_non_empty_line() {
-        assert!(parse_header("prev: yesterday-note\nnot-a-pair\njournal: daily-log").is_none());
+        assert!(
+            parse_header("prev: \"yesterday-note\"\nnot-a-pair\njournal: \"daily-log\"").is_none()
+        );
     }
 
     #[test]
     fn parse_header_returns_none_for_duplicate_required_keys() {
-        assert!(parse_header("prev: one\nprev: two\njournal: daily-log").is_none());
-        assert!(parse_header("prev: yesterday-note\njournal: one\njournal: two").is_none());
+        assert!(parse_header("prev: \"one\"\nprev: \"two\"\njournal: \"daily-log\"").is_none());
+        assert!(
+            parse_header("prev: \"yesterday-note\"\njournal: \"one\"\njournal: \"two\"").is_none()
+        );
     }
 
     #[test]
     fn parse_header_trims_whitespace() {
-        let parsed = parse_header("  prev : yesterday-note  \n  journal: daily-log   ");
+        let parsed = parse_header("  prev : \"yesterday-note\"  \n  journal: \"daily-log\"   ");
 
         assert!(parsed.is_some());
         let header = parsed.unwrap();
@@ -190,7 +199,7 @@ mod tests {
     #[test]
     fn extract_and_parse_header_flow() {
         let input =
-            "prefix ---\nprev: yesterday-note\nextra: value\njournal: daily-log\n--- trailing";
+            "prefix ---\nprev: \"yesterday-note\"\nextra: value\njournal: \"daily-log\"\n--- trailing";
         let parsed = extract_between_dashes(input).and_then(parse_header);
 
         assert!(parsed.is_some());
@@ -206,7 +215,7 @@ mod tests {
             journal: None,
         };
 
-        assert_eq!(header.to_string(), "---\nprev: yesterday-note\n---");
+        assert_eq!(header.to_string(), "---\nprev: \"yesterday-note\"\n---");
     }
 
     #[test]
