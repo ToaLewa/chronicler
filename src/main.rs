@@ -115,10 +115,32 @@ fn update_headers(journal_directory: impl AsRef<Path>) -> io::Result<()> {
         ));
     }
 
-    Ok(for file_path in dated_md_files {
-        println!("Processing: {}", file_path.display());
-        add_header(&file_path)?;
-    })
+    Ok(
+        for (index, file_path) in dated_md_files.iter().enumerate() {
+            let prev = if index == 0 {
+                String::new()
+            } else {
+                let previous_date = dated_md_files[index - 1]
+                    .file_stem()
+                    .and_then(|stem| stem.to_str())
+                    .ok_or_else(|| {
+                        io::Error::new(
+                            ErrorKind::InvalidData,
+                            format!(
+                                "Dated markdown filename is not valid UTF-8: {}",
+                                dated_md_files[index - 1].display()
+                            ),
+                        )
+                    })?
+                    .to_string();
+
+                format!("[[chronicle-{previous_date}]]")
+            };
+
+            println!("Processing: {}", file_path.display());
+            add_header(file_path, &prev)?;
+        },
+    )
 }
 
 fn is_dated_markdown_filename(path: &Path) -> bool {
@@ -141,7 +163,7 @@ fn is_dated_markdown_filename(path: &Path) -> bool {
         && bytes[12] == b'd'
 }
 
-fn add_header(file_path: impl AsRef<std::path::Path>) -> Result<(), std::io::Error> {
+fn add_header(file_path: impl AsRef<std::path::Path>, prev: &str) -> Result<(), std::io::Error> {
     let file_path = file_path.as_ref();
     let contents = match fs::read_to_string(file_path) {
         Ok(contents) => contents,
@@ -158,11 +180,25 @@ fn add_header(file_path: impl AsRef<std::path::Path>) -> Result<(), std::io::Err
         println!("Valid header already exists. No changes made.");
         return Ok(());
     }
-    let hardcoded_header = Header {
-        prev: String::from("[[yesterday-note]]"),
-        journal: Some(String::from("daily-log")),
+
+    let current_date = file_path
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .ok_or_else(|| {
+            io::Error::new(
+                ErrorKind::InvalidData,
+                format!(
+                    "Dated markdown filename is not valid UTF-8: {}",
+                    file_path.display()
+                ),
+            )
+        })?;
+
+    let header = Header {
+        prev: prev.to_string(),
+        journal: Some(format!("[[{current_date}]]")),
     };
-    let updated_contents = format!("{}\n{}", hardcoded_header, contents);
+    let updated_contents = format!("{}\n{}", header, contents);
     fs::write(file_path, updated_contents)?;
 
     println!("Header added to file.");
@@ -175,7 +211,7 @@ mod tests {
         is_dated_markdown_filename, load_config_from_path, parse_config, should_update_headers,
         update_headers,
     };
-    use io_test::extract_between_dashes;
+    use io_test::{extract_between_dashes, parse_header};
     use std::fs;
     use std::io::ErrorKind;
     use std::path::Path;
@@ -323,6 +359,59 @@ mod tests {
 
         let err = update_headers(&dir).expect_err("should fail when no dated markdown files exist");
         assert_eq!(err.kind(), ErrorKind::NotFound);
+
+        fs::remove_dir_all(&dir).expect("fixture directory should be cleaned up");
+    }
+
+    #[test]
+    fn update_headers_sets_prev_to_previous_dated_file() {
+        let dir = unique_temp_path("update_headers_prev_previous");
+        fs::create_dir_all(&dir).expect("fixture directory should be created");
+
+        let first = dir.join("2026-02-01.md");
+        let second = dir.join("2026-02-02.md");
+        fs::write(&first, "Entry body\n").expect("first fixture file should be written");
+        fs::write(&second, "Entry body\n").expect("second fixture file should be written");
+
+        update_headers(&dir).expect("updating headers should succeed");
+
+        let first_contents = fs::read_to_string(&first).expect("first file should be readable");
+        let second_contents = fs::read_to_string(&second).expect("second file should be readable");
+
+        let first_header = extract_between_dashes(&first_contents)
+            .and_then(parse_header)
+            .expect("first file should have parseable header");
+        let second_header = extract_between_dashes(&second_contents)
+            .and_then(parse_header)
+            .expect("second file should have parseable header");
+
+        assert_eq!(first_header.prev, "");
+        assert_eq!(second_header.prev, "[[chronicle-2026-02-01]]");
+        assert_eq!(first_header.journal.as_deref(), Some("[[2026-02-01]]"));
+        assert_eq!(second_header.journal.as_deref(), Some("[[2026-02-02]]"));
+
+        fs::remove_dir_all(&dir).expect("fixture directory should be cleaned up");
+    }
+
+    #[test]
+    fn update_headers_handles_date_gaps_for_prev() {
+        let dir = unique_temp_path("update_headers_prev_gap");
+        fs::create_dir_all(&dir).expect("fixture directory should be created");
+
+        let first = dir.join("2026-02-01.md");
+        let second = dir.join("2026-02-09.md");
+        fs::write(&first, "Entry body\n").expect("first fixture file should be written");
+        fs::write(&second, "Entry body\n").expect("second fixture file should be written");
+
+        update_headers(&dir).expect("updating headers should succeed");
+
+        let second_contents = fs::read_to_string(&second).expect("second file should be readable");
+
+        let second_header = extract_between_dashes(&second_contents)
+            .and_then(parse_header)
+            .expect("second file should have parseable header");
+
+        assert_eq!(second_header.prev, "[[chronicle-2026-02-01]]");
 
         fs::remove_dir_all(&dir).expect("fixture directory should be cleaned up");
     }
