@@ -103,15 +103,42 @@ fn should_update_headers(args: impl IntoIterator<Item = String>) -> bool {
 
 fn update_headers(journal_directory: impl AsRef<Path>) -> io::Result<()> {
     let md_files = list_mds(journal_directory)?;
+    let dated_md_files: Vec<PathBuf> = md_files
+        .into_iter()
+        .filter(|path| is_dated_markdown_filename(path))
+        .collect();
 
-    if md_files.is_empty() {
-        return Err(io::Error::new(ErrorKind::NotFound, "No .md files found"));
+    if dated_md_files.is_empty() {
+        return Err(io::Error::new(
+            ErrorKind::NotFound,
+            "No YYYY-MM-DD.md files found",
+        ));
     }
 
-    Ok(for file_path in md_files {
+    Ok(for file_path in dated_md_files {
         println!("Processing: {}", file_path.display());
         add_header(&file_path)?;
     })
+}
+
+fn is_dated_markdown_filename(path: &Path) -> bool {
+    let Some(name) = path.file_name().and_then(|name| name.to_str()) else {
+        return false;
+    };
+
+    if name.len() != 13 {
+        return false;
+    }
+
+    let bytes = name.as_bytes();
+    bytes[0..4].iter().all(u8::is_ascii_digit)
+        && bytes[4] == b'-'
+        && bytes[5..7].iter().all(u8::is_ascii_digit)
+        && bytes[7] == b'-'
+        && bytes[8..10].iter().all(u8::is_ascii_digit)
+        && bytes[10] == b'.'
+        && bytes[11] == b'm'
+        && bytes[12] == b'd'
 }
 
 fn add_header(file_path: impl AsRef<std::path::Path>) -> Result<(), std::io::Error> {
@@ -144,7 +171,12 @@ fn add_header(file_path: impl AsRef<std::path::Path>) -> Result<(), std::io::Err
 
 #[cfg(test)]
 mod tests {
-    use super::{load_config_from_path, parse_config, should_update_headers};
+    use super::{
+        is_dated_markdown_filename, load_config_from_path, parse_config, should_update_headers,
+        update_headers,
+    };
+    use io_test::extract_between_dashes;
+    use std::fs;
     use std::io::ErrorKind;
     use std::path::Path;
     use std::time::{SystemTime, UNIX_EPOCH};
@@ -226,5 +258,72 @@ mod tests {
         let err = load_config_from_path(&path).expect_err("missing config should fail");
 
         assert_eq!(err.kind(), ErrorKind::NotFound);
+    }
+
+    #[test]
+    fn dated_markdown_filename_matches_expected_pattern() {
+        assert!(is_dated_markdown_filename(Path::new("2026-01-31.md")));
+    }
+
+    #[test]
+    fn dated_markdown_filename_rejects_non_matching_names() {
+        let non_matches = [
+            "notes.md",
+            "2026-1-31.md",
+            "2026-01-31.MD",
+            "2026-01-31.txt",
+            "20260131.md",
+            "2026-01-31.md.bak",
+        ];
+
+        for file_name in non_matches {
+            assert!(
+                !is_dated_markdown_filename(Path::new(file_name)),
+                "{file_name} should not match YYYY-MM-DD.md"
+            );
+        }
+    }
+
+    #[test]
+    fn update_headers_only_updates_dated_markdown_files() {
+        let dir = unique_temp_path("update_headers_dated_only");
+        fs::create_dir_all(&dir).expect("fixture directory should be created");
+
+        let dated_file = dir.join("2026-01-01.md");
+        let non_dated_md = dir.join("notes.md");
+        let txt_file = dir.join("2026-01-02.txt");
+
+        fs::write(&dated_file, "Entry body\n").expect("dated fixture file should be written");
+        fs::write(&non_dated_md, "Entry body\n")
+            .expect("non-dated md fixture file should be written");
+        fs::write(&txt_file, "Entry body\n").expect("txt fixture file should be written");
+
+        update_headers(&dir).expect("updating headers should succeed");
+
+        let dated_contents =
+            fs::read_to_string(&dated_file).expect("dated file should be readable");
+        let non_dated_contents =
+            fs::read_to_string(&non_dated_md).expect("non-dated md should be readable");
+        let txt_contents = fs::read_to_string(&txt_file).expect("txt file should be readable");
+
+        assert!(extract_between_dashes(&dated_contents).is_some());
+        assert_eq!(non_dated_contents, "Entry body\n");
+        assert_eq!(txt_contents, "Entry body\n");
+
+        fs::remove_dir_all(&dir).expect("fixture directory should be cleaned up");
+    }
+
+    #[test]
+    fn update_headers_returns_not_found_when_no_dated_markdown_files() {
+        let dir = unique_temp_path("update_headers_no_dated_files");
+        fs::create_dir_all(&dir).expect("fixture directory should be created");
+
+        fs::write(dir.join("notes.md"), "Entry body\n")
+            .expect("non-dated md fixture file should be written");
+
+        let err = update_headers(&dir).expect_err("should fail when no dated markdown files exist");
+        assert_eq!(err.kind(), ErrorKind::NotFound);
+
+        fs::remove_dir_all(&dir).expect("fixture directory should be cleaned up");
     }
 }
