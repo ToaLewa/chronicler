@@ -1,5 +1,5 @@
+use chronicler::{extract_between_dashes, list_mds, parse_header, Header};
 use chrono::{Duration, Local};
-use io_test::{extract_between_dashes, list_mds, parse_header, Header};
 use serde::Deserialize;
 use std::env;
 use std::fs::{self, File};
@@ -272,7 +272,7 @@ mod tests {
         is_chronicler_markdown_filename, load_config_from_path, parse_config,
         should_update_headers, update_chronicler_headers,
     };
-    use io_test::{extract_between_dashes, parse_header};
+    use chronicler::{extract_between_dashes, parse_header};
     use std::fs;
     use std::io::ErrorKind;
     use std::path::Path;
@@ -289,19 +289,19 @@ mod tests {
 
     #[test]
     fn does_not_update_headers_without_flag() {
-        let args = vec![String::from("io-test")];
+        let args = vec![String::from("chronicler")];
         assert!(!should_update_headers(args));
     }
 
     #[test]
     fn updates_headers_with_long_flag() {
-        let args = vec![String::from("io-test"), String::from("--update-headers")];
+        let args = vec![String::from("chronicler"), String::from("--update-headers")];
         assert!(should_update_headers(args));
     }
 
     #[test]
     fn updates_headers_with_short_flag() {
-        let args = vec![String::from("io-test"), String::from("-u")];
+        let args = vec![String::from("chronicler"), String::from("-u")];
         assert!(should_update_headers(args));
     }
 

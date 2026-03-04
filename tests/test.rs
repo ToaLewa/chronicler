@@ -1,4 +1,4 @@
-use io_test::extract_between_dashes;
+use chronicler::extract_between_dashes;
 
 #[test]
 fn public_api_extracts_section() {
