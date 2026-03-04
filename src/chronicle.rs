@@ -2,7 +2,7 @@
 //!
 //! Handles appending entries and updating headers for chronicle-YYYY-MM-DD.md files.
 
-use crate::{extract_between_dashes, list_mds, parse_header, Header};
+use crate::{extract_between_dashes, list_mds, Header};
 use chrono::{Duration, Local};
 use std::fs::{self, File};
 use std::io::{self, ErrorKind, Write};
@@ -138,13 +138,6 @@ fn add_chronicler_header(
         }
         Err(err) => return Err(err),
     };
-    let has_valid_header = extract_between_dashes(&contents)
-        .and_then(parse_header)
-        .is_some();
-    if has_valid_header {
-        println!("Valid header already exists. No changes made.\n");
-        return Ok(());
-    }
 
     let current_date = chronicler_date_from_path(file_path)?;
 
@@ -152,10 +145,34 @@ fn add_chronicler_header(
         prev: prev.to_string(),
         journal: Some(format!("[[{current_date}]]")),
     };
-    let updated_contents = format!("{}\n{}", header, contents);
+
+    let updated_contents = if let Some(_existing_header) = extract_between_dashes(&contents) {
+        // Header exists - replace it
+        let header_start = contents.find("---").unwrap();
+        let header_end_marker =
+            contents[header_start + 3..].find("---").unwrap() + header_start + 3;
+        let after_header = header_end_marker + 3;
+
+        // Skip the newline after the closing --- if present
+        let content_start = if contents.as_bytes().get(after_header) == Some(&b'\n') {
+            after_header + 1
+        } else {
+            after_header
+        };
+
+        format!("{}\n{}", header, &contents[content_start..])
+    } else {
+        // No header - prepend it
+        format!("{}\n{}", header, contents)
+    };
+
     fs::write(file_path, updated_contents)?;
 
-    println!("Header added to file.\n");
+    if extract_between_dashes(&contents).is_some() {
+        println!("Header updated.\n");
+    } else {
+        println!("Header added to file.\n");
+    }
     Ok(())
 }
 
