@@ -1,4 +1,4 @@
-# chronicler
+# Chronicler
 
 A Rust CLI tool for managing chronicle markdown files with automatic YAML frontmatter generation.
 
