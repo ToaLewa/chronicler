@@ -14,6 +14,15 @@ const CONFIG_RELATIVE_PATH: &str = ".config/chronicler/config.toml";
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub chronicler_directory: Option<String>,
+    pub journal_directory: Option<String>,
+}
+
+/// Loads the full configuration from the config file.
+///
+/// Returns an error if the config file is missing or malformed.
+pub fn load_config() -> io::Result<Config> {
+    let config_path = chronicler_config_path()?;
+    load_config_from_path(&config_path)
 }
 
 /// Loads the chronicler directory path from the config file.
@@ -35,6 +44,27 @@ pub fn load_chronicler_directory() -> io::Result<PathBuf> {
     }
 
     Ok(PathBuf::from(chronicler_directory))
+}
+
+/// Loads the journal directory path from the config file.
+///
+/// Returns an error if the config file is missing, malformed, or the directory path is empty.
+pub fn load_journal_directory() -> io::Result<PathBuf> {
+    let config_path = chronicler_config_path()?;
+    let config = load_config_from_path(&config_path)?;
+    let journal_directory = config.journal_directory.as_deref().unwrap_or("").trim();
+
+    if journal_directory.is_empty() {
+        return Err(io::Error::new(
+            ErrorKind::InvalidData,
+            format!(
+                "`journal_directory` cannot be empty in {}",
+                config_path.display()
+            ),
+        ));
+    }
+
+    Ok(PathBuf::from(journal_directory))
 }
 
 /// Returns the expected path to the chronicler config file.
@@ -170,5 +200,46 @@ mod tests {
         let err = load_config_from_path(&path).expect_err("missing config should fail");
 
         assert_eq!(err.kind(), ErrorKind::NotFound);
+    }
+
+    #[test]
+    fn parse_config_reads_journal_directory() {
+        let config = parse_config(
+            "journal_directory = \"/tmp/journal\"",
+            Path::new("/tmp/chronicler-config"),
+        )
+        .expect("config should parse");
+
+        assert_eq!(config.journal_directory.as_deref(), Some("/tmp/journal"));
+    }
+
+    #[test]
+    fn parse_config_reads_both_directories() {
+        let config = parse_config(
+            "chronicler_directory = \"/tmp/chronicler\"\njournal_directory = \"/tmp/journal\"",
+            Path::new("/tmp/chronicler-config"),
+        )
+        .expect("config with both directories should parse");
+
+        assert_eq!(
+            config.chronicler_directory.as_deref(),
+            Some("/tmp/chronicler")
+        );
+        assert_eq!(config.journal_directory.as_deref(), Some("/tmp/journal"));
+    }
+
+    #[test]
+    fn parse_config_allows_missing_journal_directory() {
+        let config = parse_config(
+            "chronicler_directory = \"/tmp/chronicler\"",
+            Path::new("/tmp/chronicler-config"),
+        )
+        .expect("config without journal_directory should parse");
+
+        assert_eq!(
+            config.chronicler_directory.as_deref(),
+            Some("/tmp/chronicler")
+        );
+        assert_eq!(config.journal_directory, None);
     }
 }

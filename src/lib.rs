@@ -5,10 +5,14 @@
 pub mod chronicle;
 pub mod config;
 pub mod header;
+pub mod journal;
 
 pub use chronicle::{append_chronicle_entry, update_chronicler_headers};
-pub use config::{chronicler_config_path, load_chronicler_directory, Config};
+pub use config::{
+    chronicler_config_path, load_chronicler_directory, load_config, load_journal_directory, Config,
+};
 pub use header::{extract_between_dashes, parse_header, Header};
+pub use journal::update_journal_headers;
 
 /// Lists all markdown files (.md) in a directory, sorted alphabetically.
 ///
