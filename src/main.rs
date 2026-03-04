@@ -38,7 +38,7 @@ fn run() -> std::io::Result<()> {
     if args.len() >= 2 {
         let entry_text = &args[1];
         append_chronicle_entry(&chronicler_directory, entry_text)?;
-        println!("Entry appended to chronicle for today.");
+        println!("Entry appended to today's chronicle.");
         return Ok(());
     }
 
