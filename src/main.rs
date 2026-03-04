@@ -1,8 +1,9 @@
+use chrono::{Duration, Local};
 use io_test::{extract_between_dashes, list_mds, parse_header, Header};
 use serde::Deserialize;
 use std::env;
-use std::fs;
-use std::io::{self, ErrorKind};
+use std::fs::{self, File};
+use std::io::{self, ErrorKind, Write};
 use std::path::{Path, PathBuf};
 
 const CONFIG_RELATIVE_PATH: &str = ".config/chronicler/config.toml";
@@ -20,13 +21,64 @@ fn main() {
 }
 
 fn run() -> std::io::Result<()> {
+    let args: Vec<String> = env::args().collect();
     let chronicler_directory = load_chronicler_directory()?;
-    let str = &chronicler_directory.display();
 
-    if should_update_headers(std::env::args()) {
-        println!("Looking for chrono files in {str}\n");
+    // Check if we're in update-headers mode
+    if should_update_headers(args.iter().cloned()) {
+        println!(
+            "Looking for chrono files in {}\n",
+            chronicler_directory.display()
+        );
         update_chronicler_headers(&chronicler_directory)?;
+        return Ok(());
     }
+
+    // Check if we're in append mode (positional argument provided)
+    if args.len() >= 2 {
+        let entry_text = &args[1];
+        append_chronicle_entry(&chronicler_directory, entry_text)?;
+        println!("Entry appended to chronicle for today.");
+        return Ok(());
+    }
+
+    // No valid arguments provided - show usage
+    eprintln!("Usage:");
+    eprintln!("  chronicler \"entry text\"              Append an entry to today's chronicle");
+    eprintln!("  chronicler --update-headers          Update headers for all chronicle files");
+    eprintln!("  chronicler -u                        Update headers (short form)");
+
+    std::process::exit(1);
+}
+
+fn append_chronicle_entry(chronicler_directory: &Path, entry_text: &str) -> io::Result<()> {
+    let local_now = Local::now();
+    let time = local_now.format("%H:%M");
+    let date = local_now.date_naive();
+    let yesterday = (local_now - Duration::days(1)).date_naive();
+
+    let path = chronicler_directory.join(format!("chronicle-{date}.md"));
+
+    // If file doesn't exist, create it with YAML frontmatter header
+    if !path.exists() {
+        let mut file = File::options().append(true).create(true).open(&path)?;
+
+        // Create YAML frontmatter header
+        let header = Header {
+            prev: format!("[[chronicle-{yesterday}]]"),
+            journal: Some(format!("[[{date}]]")),
+        };
+
+        writeln!(&mut file, "{}", header)?;
+        writeln!(&mut file)?;
+        writeln!(&mut file, "## Chronicles")?;
+        writeln!(&mut file)?;
+    }
+
+    // Append the entry in markdown list format
+    let mut file = File::options().append(true).open(&path)?;
+
+    writeln!(&mut file, "- {time}: {entry_text}")?;
 
     Ok(())
 }
@@ -445,6 +497,101 @@ mod tests {
             .expect("second file should have parseable header");
 
         assert_eq!(second_header.prev, "[[chronicle-2026-02-01]]");
+
+        fs::remove_dir_all(&dir).expect("fixture directory should be cleaned up");
+    }
+
+    #[test]
+    fn append_chronicle_entry_creates_new_file_with_header() {
+        let dir = unique_temp_path("append_creates_file");
+        fs::create_dir_all(&dir).expect("fixture directory should be created");
+
+        super::append_chronicle_entry(&dir, "First entry")
+            .expect("appending to new file should succeed");
+
+        let today = chrono::Local::now().date_naive();
+        let file_path = dir.join(format!("chronicle-{today}.md"));
+        assert!(file_path.exists(), "chronicle file should be created");
+
+        let contents = fs::read_to_string(&file_path).expect("file should be readable");
+
+        // Check that YAML header exists
+        assert!(extract_between_dashes(&contents).is_some());
+        let header = extract_between_dashes(&contents)
+            .and_then(parse_header)
+            .expect("file should have valid YAML header");
+
+        assert_eq!(header.journal, Some(format!("[[{today}]]")));
+        assert!(contents.contains("## Chronicles"));
+        assert!(contents.contains("First entry"));
+
+        fs::remove_dir_all(&dir).expect("fixture directory should be cleaned up");
+    }
+
+    #[test]
+    fn append_chronicle_entry_appends_to_existing_file() {
+        let dir = unique_temp_path("append_to_existing");
+        fs::create_dir_all(&dir).expect("fixture directory should be created");
+
+        super::append_chronicle_entry(&dir, "First entry").expect("first append should succeed");
+        super::append_chronicle_entry(&dir, "Second entry").expect("second append should succeed");
+
+        let today = chrono::Local::now().date_naive();
+        let file_path = dir.join(format!("chronicle-{today}.md"));
+        let contents = fs::read_to_string(&file_path).expect("file should be readable");
+
+        assert!(contents.contains("First entry"));
+        assert!(contents.contains("Second entry"));
+
+        // Check that header only appears once
+        let header_count = contents.matches("---").count();
+        assert_eq!(
+            header_count, 2,
+            "should have exactly one YAML header (2 delimiters)"
+        );
+
+        fs::remove_dir_all(&dir).expect("fixture directory should be cleaned up");
+    }
+
+    #[test]
+    fn append_chronicle_entry_uses_markdown_list_format() {
+        let dir = unique_temp_path("append_markdown_format");
+        fs::create_dir_all(&dir).expect("fixture directory should be created");
+
+        super::append_chronicle_entry(&dir, "Test entry").expect("append should succeed");
+
+        let today = chrono::Local::now().date_naive();
+        let file_path = dir.join(format!("chronicle-{today}.md"));
+        let contents = fs::read_to_string(&file_path).expect("file should be readable");
+
+        // Check for markdown list format (starts with "- " followed by time and entry)
+        assert!(
+            contents
+                .lines()
+                .any(|line| line.starts_with("- ") && line.contains("Test entry")),
+            "entry should be in markdown list format"
+        );
+
+        fs::remove_dir_all(&dir).expect("fixture directory should be cleaned up");
+    }
+
+    #[test]
+    fn append_chronicle_entry_includes_yesterday_in_prev_link() {
+        let dir = unique_temp_path("append_prev_link");
+        fs::create_dir_all(&dir).expect("fixture directory should be created");
+
+        super::append_chronicle_entry(&dir, "Test entry").expect("append should succeed");
+
+        let today = chrono::Local::now().date_naive();
+        let yesterday = (chrono::Local::now() - chrono::Duration::days(1)).date_naive();
+        let file_path = dir.join(format!("chronicle-{today}.md"));
+        let contents = fs::read_to_string(&file_path).expect("file should be readable");
+
+        let header = extract_between_dashes(&contents)
+            .and_then(parse_header)
+            .expect("file should have valid header");
+
+        assert_eq!(header.prev, format!("[[chronicle-{yesterday}]]"));
 
         fs::remove_dir_all(&dir).expect("fixture directory should be cleaned up");
     }
