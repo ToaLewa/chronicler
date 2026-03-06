@@ -44,6 +44,85 @@ pub fn append_chronicle_entry(chronicler_directory: &Path, entry_text: &str) -> 
     Ok(())
 }
 
+/// Reads and prints the last N chronicle files to stdout.
+///
+/// Filters for valid chronicle-YYYY-MM-DD.md files, sorts them newest to oldest,
+/// and prints only the log entries (skipping YAML frontmatter and markdown headers).
+pub fn read_last_n_chronicles(chronicler_directory: &Path, n: usize) -> io::Result<()> {
+    let md_files = list_mds(chronicler_directory)?;
+    let mut chronicle_files: Vec<PathBuf> = md_files
+        .into_iter()
+        .filter(|path| is_chronicler_markdown_filename(path))
+        .collect();
+
+    if chronicle_files.is_empty() {
+        return Err(io::Error::new(
+            ErrorKind::NotFound,
+            "No chronicle-YYYY-MM-DD.md files found",
+        ));
+    }
+
+    // Sort in reverse order (newest first) - chronicle-YYYY-MM-DD.md sorts alphabetically
+    chronicle_files.sort();
+    chronicle_files.reverse();
+
+    // Take the last N files (or all if fewer than N)
+    let files_to_read = chronicle_files.iter().take(n);
+
+    for file_path in files_to_read {
+        // Extract and print the date first
+        let date = chronicler_date_from_path(file_path)?;
+        println!("{}", date);
+
+        let contents = fs::read_to_string(file_path)?;
+
+        // Skip YAML frontmatter and markdown headers, print only log entries
+        let mut in_yaml_header = false;
+        let mut past_yaml_header = false;
+
+        for line in contents.lines() {
+            // Track YAML header delimiters
+            if line.trim() == "---" {
+                if !past_yaml_header {
+                    in_yaml_header = !in_yaml_header;
+                    if !in_yaml_header {
+                        past_yaml_header = true;
+                    }
+                }
+                continue;
+            }
+
+            // Skip lines inside YAML header
+            if in_yaml_header {
+                continue;
+            }
+
+            // Skip markdown section headers (lines starting with #)
+            if line.trim_start().starts_with('#') {
+                continue;
+            }
+
+            // Skip empty lines at the start (before actual content)
+            if !past_yaml_header {
+                continue;
+            }
+
+            // Skip blank lines in the log section
+            if line.trim().is_empty() {
+                continue;
+            }
+
+            // Print everything else (the actual log entries)
+            println!("{}", line);
+        }
+
+        // Add blank line after each day's logs
+        println!();
+    }
+
+    Ok(())
+}
+
 /// Updates headers for all chronicle-YYYY-MM-DD.md files in a directory.
 ///
 /// Sets the `prev` field to link to the previous chronologically-ordered file.

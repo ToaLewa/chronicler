@@ -1,6 +1,6 @@
 use chronicler::{
-    append_chronicle_entry, load_chronicler_directory, load_config, update_chronicler_headers,
-    update_journal_headers,
+    append_chronicle_entry, load_chronicler_directory, load_config, read_last_n_chronicles,
+    update_chronicler_headers, update_journal_headers,
 };
 use std::env;
 use std::io::{self, ErrorKind};
@@ -15,6 +15,13 @@ fn main() {
 
 fn run() -> std::io::Result<()> {
     let args: Vec<String> = env::args().collect();
+
+    // Check if we're in read mode
+    if let Some(n) = should_read_last_n(args.iter().cloned()) {
+        let chronicler_directory = load_chronicler_directory()?;
+        read_last_n_chronicles(&chronicler_directory, n)?;
+        return Ok(());
+    }
 
     // Check if we're in update-headers mode
     if should_update_headers(args.iter().cloned()) {
@@ -91,8 +98,33 @@ fn run() -> std::io::Result<()> {
     eprintln!("  chronicler \"entry text\"              Append an entry to today's chronicle");
     eprintln!("  chronicler --update-headers          Update headers for all chronicle files");
     eprintln!("  chronicler -u                        Update headers (short form)");
+    eprintln!("  chronicler --read [N]                Read last N chronicle files (default: 7)");
+    eprintln!("  chronicler --today                   Read today's chronicle file");
 
     std::process::exit(1);
+}
+
+fn should_read_last_n(args: impl IntoIterator<Item = String>) -> Option<usize> {
+    let args_vec: Vec<String> = args.into_iter().skip(1).collect();
+
+    for (i, arg) in args_vec.iter().enumerate() {
+        if arg == "--today" {
+            return Some(1);
+        }
+
+        if arg == "--read" {
+            // Check if there's a number argument after --read
+            if let Some(next_arg) = args_vec.get(i + 1) {
+                if let Ok(n) = next_arg.parse::<usize>() {
+                    return Some(n);
+                }
+            }
+            // No number provided or invalid number, use default of 7
+            return Some(7);
+        }
+    }
+
+    None
 }
 
 fn should_update_headers(args: impl IntoIterator<Item = String>) -> bool {

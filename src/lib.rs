@@ -7,7 +7,7 @@ pub mod config;
 pub mod header;
 pub mod journal;
 
-pub use chronicle::{append_chronicle_entry, update_chronicler_headers};
+pub use chronicle::{append_chronicle_entry, read_last_n_chronicles, update_chronicler_headers};
 pub use config::{
     chronicler_config_path, load_chronicler_directory, load_config, load_journal_directory, Config,
 };
