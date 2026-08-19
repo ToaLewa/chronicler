@@ -12,14 +12,26 @@ func check(e error) {
 	}
 }
 
+type chronoFile struct {
+	name        string
+	frontmatter frontmatter
+	content     content
+}
+
+type frontmatter struct {
+	prev    string
+	journal string
+	next    string
+}
+
 type content struct {
 	header  string
 	bullets []bullet
 }
 
 type bullet struct {
-	date string
-	text string
+	timestamp string
+	text      string
 }
 
 func createFirst() {
