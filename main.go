@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 )
 
 func check(e error) {
@@ -39,6 +40,11 @@ func createFirst() {
 }
 
 func main() {
+
+	now := time.Now()
+	year, month, day := now.Date()
+
+	fmt.Println(strconv.Itoa(year) + strconv.Itoa(int(month)) + strconv.Itoa(day))
 
 	// Read the current directory (".")
 	entries, err := os.ReadDir("/Users/kkulis/Documents/atg/chrono/")
