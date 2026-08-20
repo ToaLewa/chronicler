@@ -13,7 +13,7 @@ func check(e error) {
 	}
 }
 
-type chronoFile struct {
+type ChronoMarkdownFile struct {
 	name        string
 	frontmatter frontmatter
 	content     content
@@ -27,12 +27,21 @@ type frontmatter struct {
 
 type content struct {
 	header  string
-	bullets []bullet
+	bullets []Entry
 }
 
-type bullet struct {
-	timestamp string
-	text      string
+// .chro file extension
+type ChronoFile struct {
+}
+
+type Log struct {
+	Day     string
+	Entries []Entry
+}
+
+type Entry struct {
+	Time time.Time `json:"entry"`
+	Text string    `json:"text"`
 }
 
 func createFirst(fileName string) {
