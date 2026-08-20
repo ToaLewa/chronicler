@@ -35,8 +35,9 @@ type bullet struct {
 	text      string
 }
 
-func createFirst() {
+func createFirst(fileName string) {
 	//Unimplemented
+	fmt.Println(fileName)
 }
 
 func main() {
@@ -56,6 +57,9 @@ func main() {
 	if fileCount > 0 {
 		fmt.Println("Files found")
 		fmt.Println(strconv.Itoa(fileCount))
+
+		fileName := "chronicle-" + nowF + ".md"
+		createFirst(fileName)
 
 	}
 	// if err != nil {
