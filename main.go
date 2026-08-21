@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
@@ -32,16 +33,17 @@ type content struct {
 
 // .chro file extension
 type ChronoFile struct {
+	Logs []Log `json:"logs"`
 }
 
 type Log struct {
-	Day     string
-	Entries []Entry
+	Date    string  `json:"date"`
+	Entries []Entry `json:"entries"`
 }
 
 type Entry struct {
-	Time time.Time `json:"entry"`
-	Text string    `json:"text"`
+	Time string `json:"time"`
+	Text string `json:"text"`
 }
 
 func createFirst(fileName string) {
@@ -52,9 +54,22 @@ func createFirst(fileName string) {
 func main() {
 
 	now := time.Now()
+	nowF := now.Format("2006-01-02")
 	// year, month, day := now.Date()
 
-	nowF := now.Format("2006-01-02")
+	log1 := Log{
+		Date: nowF,
+		Entries: []Entry{
+			{
+				Time: "11:00",
+				Text: "Blah blah blah",
+			},
+		},
+	}
+
+	b, _ := json.Marshal(log1)
+
+	os.WriteFile("test.chro", b, 0666)
 
 	fmt.Println(nowF)
 
