@@ -64,7 +64,8 @@ func main() {
 		userText := os.Args[1]
 
 		hour, min, _ := time.Now().Local().Clock()
-		timeStr := strconv.Itoa(hour) + ":" + strconv.Itoa(min)
+		timeString := fmt.Sprintf("%d:%02d", hour, min)
+
 		// year, month, day := now.Date()
 		oFile := ChronoFile{
 			Logs: []Log{
@@ -72,7 +73,7 @@ func main() {
 					Date: formattedNow,
 					Entries: []Entry{
 						{
-							Time: timeStr,
+							Time: timeString,
 							Text: userText,
 						},
 					},
