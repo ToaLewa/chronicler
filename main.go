@@ -77,6 +77,16 @@ func main() {
 
 	if hasArg() {
 		userText := os.Args[1]
+
+		dat, err := os.ReadFile(ChronoFileName)
+		check(err)
+
+		var chronoFile ChronoFile
+
+		err1 := json.Unmarshal(dat, &chronoFile)
+		check(err1)
+		fmt.Println(chronoFile.Logs[0])
+
 		oFile := ChronoFile{
 			Logs: []YearLog{
 				{
