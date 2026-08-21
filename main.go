@@ -66,6 +66,8 @@ func hasArg() bool {
 	return len(os.Args) > 1
 }
 
+const ChronoFileName = "chrono.json"
+
 func main() {
 	now := time.Now()
 	dateString := now.Format("2006-01-02")
@@ -101,7 +103,7 @@ func main() {
 
 		b, _ := json.Marshal(oFile)
 
-		os.WriteFile("test.json", b, 0666)
+		os.WriteFile(ChronoFileName, b, 0666)
 
 		fmt.Println("Write file")
 

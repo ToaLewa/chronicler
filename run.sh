@@ -1,3 +1,3 @@
 go run main.go "blah"
 
-bat test.json
+bat chrono.json
