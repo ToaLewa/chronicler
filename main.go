@@ -31,7 +31,7 @@ type content struct {
 	bullets []Entry
 }
 
-// .chro file extension
+// Use .chro file extension if .json is too constraining
 type ChronoFile struct {
 	Logs []Log `json:"logs"`
 }
@@ -83,7 +83,7 @@ func main() {
 
 		b, _ := json.Marshal(oFile)
 
-		os.WriteFile("test.chro", b, 0666)
+		os.WriteFile("test.json", b, 0666)
 
 		fmt.Println("Write file")
 
