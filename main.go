@@ -58,17 +58,22 @@ func hasArg() bool {
 func main() {
 
 	now := time.Now()
-	nowF := now.Format("2006-01-02")
+	formattedNow := now.Format("2006-01-02")
+
 	if hasArg() {
+		userText := os.Args[1]
+
+		hour, min, _ := time.Now().Local().Clock()
+		timeStr := strconv.Itoa(hour) + ":" + strconv.Itoa(min)
 		// year, month, day := now.Date()
 		oFile := ChronoFile{
 			Logs: []Log{
 				{
-					Date: nowF,
+					Date: formattedNow,
 					Entries: []Entry{
 						{
-							Time: "11:00",
-							Text: "Blah blah blah",
+							Time: timeStr,
+							Text: userText,
 						},
 					},
 				},
@@ -82,7 +87,7 @@ func main() {
 		fmt.Println("Write file")
 
 	} else {
-		fmt.Println(nowF)
+		fmt.Println(formattedNow)
 
 		// Read the current directory (".")
 		entries, err := os.ReadDir("/Users/kkulis/Documents/atg/chrono/")
@@ -93,7 +98,7 @@ func main() {
 			fmt.Println("Files found")
 			fmt.Println(strconv.Itoa(fileCount))
 
-			fileName := "chronicle-" + nowF + ".md"
+			fileName := "chronicle-" + formattedNow + ".md"
 			createFirst(fileName)
 
 		}
