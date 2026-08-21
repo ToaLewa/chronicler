@@ -57,17 +57,21 @@ func main() {
 	nowF := now.Format("2006-01-02")
 	// year, month, day := now.Date()
 
-	log1 := Log{
-		Date: nowF,
-		Entries: []Entry{
+	oFile := ChronoFile{
+		Logs: []Log{
 			{
-				Time: "11:00",
-				Text: "Blah blah blah",
+				Date: nowF,
+				Entries: []Entry{
+					{
+						Time: "11:00",
+						Text: "Blah blah blah",
+					},
+				},
 			},
 		},
 	}
 
-	b, _ := json.Marshal(log1)
+	b, _ := json.Marshal(oFile)
 
 	os.WriteFile("test.chro", b, 0666)
 
