@@ -33,10 +33,21 @@ type content struct {
 
 // Use .chro file extension if .json is too constraining
 type ChronoFile struct {
-	Logs []Log `json:"logs"`
+	Logs []YearLog `json:"logs"`
 }
 
-type Log struct {
+type YearLog struct {
+	Year   int        `json:"year"`
+	Months []MonthLog `json:"months"`
+}
+
+type MonthLog struct {
+	Month int      `json:"month"`
+	Days  []DayLog `json:"days"`
+}
+
+type DayLog struct {
+	Day     int     `json:"day"`
 	Date    string  `json:"date"`
 	Entries []Entry `json:"entries"`
 }
@@ -56,26 +67,33 @@ func hasArg() bool {
 }
 
 func main() {
-
 	now := time.Now()
-	formattedNow := now.Format("2006-01-02")
+	dateString := now.Format("2006-01-02")
+	hour, min, _ := time.Now().Local().Clock()
+	timeString := fmt.Sprintf("%d:%02d", hour, min)
+	year, month, day := now.Date()
 
 	if hasArg() {
 		userText := os.Args[1]
-
-		hour, min, _ := time.Now().Local().Clock()
-		timeString := fmt.Sprintf("%d:%02d", hour, min)
-
-		// year, month, day := now.Date()
 		oFile := ChronoFile{
-			Logs: []Log{
+			Logs: []YearLog{
 				{
-					Date: formattedNow,
-					Entries: []Entry{
-						{
-							Time: timeString,
-							Text: userText,
+					Year: year,
+					Months: []MonthLog{{
+						Month: int(month),
+						Days: []DayLog{
+							{
+								Day:  day,
+								Date: dateString,
+								Entries: []Entry{
+									{
+										Time: timeString,
+										Text: userText,
+									},
+								},
+							},
 						},
+					},
 					},
 				},
 			},
@@ -88,7 +106,7 @@ func main() {
 		fmt.Println("Write file")
 
 	} else {
-		fmt.Println(formattedNow)
+		fmt.Println(dateString)
 
 		// Read the current directory (".")
 		entries, err := os.ReadDir("/Users/kkulis/Documents/atg/chrono/")
@@ -99,7 +117,7 @@ func main() {
 			fmt.Println("Files found")
 			fmt.Println(strconv.Itoa(fileCount))
 
-			fileName := "chronicle-" + formattedNow + ".md"
+			fileName := "chronicle-" + dateString + ".md"
 			createFirst(fileName)
 
 		}
