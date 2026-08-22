@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -68,16 +69,25 @@ func hasArg() bool {
 
 const ChronoFileName = "chrono.json"
 
-func loadChronoFile() ChronoFile {
+var ErrChronoFileNotFound = errors.New("chrono file not found")
+
+func loadChronoFile() (ChronoFile, error) {
 	dat, readError := os.ReadFile(ChronoFileName)
-	check(readError)
+	if errors.Is(readError, os.ErrNotExist) {
+		return ChronoFile{}, ErrChronoFileNotFound
+	}
+	if readError != nil {
+		return ChronoFile{}, fmt.Errorf("read %s: %w", ChronoFileName, readError)
+	}
 
 	var chronoFile ChronoFile
 
 	jsonError := json.Unmarshal(dat, &chronoFile)
-	check(jsonError)
+	if jsonError != nil {
+		return ChronoFile{}, fmt.Errorf("parse %s: %w", ChronoFileName, jsonError)
+	}
 
-	return chronoFile
+	return chronoFile, nil
 }
 
 func main() {
@@ -90,7 +100,11 @@ func main() {
 	if hasArg() {
 		userText := os.Args[1]
 
-		loadChronoFile()
+		_, err := loadChronoFile()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
 
 		oFile := ChronoFile{
 			Logs: []YearLog{
