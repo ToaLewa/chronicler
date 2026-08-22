@@ -33,22 +33,13 @@ type content struct {
 }
 
 // Use .chro file extension if .json is too constraining
-type ChronoFile struct {
-	Logs []YearLog `json:"logs"`
-}
+type ChronoFile map[int]YearLog
 
-type YearLog struct {
-	Year   int        `json:"year"`
-	Months []MonthLog `json:"months"`
-}
+type YearLog map[int]MonthLog
 
-type MonthLog struct {
-	Month int      `json:"month"`
-	Days  []DayLog `json:"days"`
-}
+type MonthLog map[int]DayLog
 
 type DayLog struct {
-	Day     int     `json:"day"`
 	Date    string  `json:"date"`
 	Entries []Entry `json:"entries"`
 }
@@ -116,48 +107,36 @@ func getCurrentTimePieces() CurrentTimePieces {
 
 func main() {
 
-	timePieces := getCurrentTimePieces()
-
 	if hasArg() {
 		userText := os.Args[1]
 
-		_, err := loadChronoFile()
+		chFile, err := loadChronoFile()
 		if err != nil && err != ErrChronoFileNotFound {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
 			os.Exit(1)
 		}
 
-		oFile := ChronoFile{
-			Logs: []YearLog{
-				{
-					Year: timePieces.Year,
-					Months: []MonthLog{{
-						Month: timePieces.Month,
-						Days: []DayLog{
-							{
-								Day:  timePieces.Day,
-								Date: timePieces.DateString,
-								Entries: []Entry{
-									{
-										Time: timePieces.TimeString,
-										Text: userText,
-									},
-								},
-							},
-						},
-					},
-					},
-				},
-			},
+		if chFile == nil {
+			chFile = ChronoFile{}
 		}
 
-		b, _ := json.Marshal(oFile)
+		appendLogEntry(chFile, userText)
 
-		os.WriteFile(ChronoFileName, b, 0666)
+		b, err := json.Marshal(chFile)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error: encode %s: %v\n", ChronoFileName, err)
+			os.Exit(1)
+		}
+
+		if err := os.WriteFile(ChronoFileName, b, 0666); err != nil {
+			fmt.Fprintf(os.Stderr, "error: write %s: %v\n", ChronoFileName, err)
+			os.Exit(1)
+		}
 
 		fmt.Println("Write file")
 
 	} else {
+		timePieces := getCurrentTimePieces()
 		fmt.Println(timePieces.DateString)
 
 		// Read the current directory (".")
@@ -193,4 +172,31 @@ func main() {
 		// fmt.Print(string(dat))
 		// fmt.Println("Test")
 	}
+}
+
+func appendLogEntry(chFile ChronoFile, userText string) {
+	timePieces := getCurrentTimePieces()
+
+	yearLog, ok := chFile[timePieces.Year]
+	if !ok {
+		yearLog = YearLog{}
+		chFile[timePieces.Year] = yearLog
+	}
+
+	monthLog, ok := yearLog[timePieces.Month]
+	if !ok {
+		monthLog = MonthLog{}
+		yearLog[timePieces.Month] = monthLog
+	}
+
+	dayLog, ok := monthLog[timePieces.Day]
+	if !ok {
+		dayLog = DayLog{Date: timePieces.DateString}
+	}
+
+	dayLog.Entries = append(dayLog.Entries, Entry{
+		Time: timePieces.TimeString,
+		Text: userText,
+	})
+	monthLog[timePieces.Day] = dayLog
 }
