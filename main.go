@@ -68,6 +68,18 @@ func hasArg() bool {
 
 const ChronoFileName = "chrono.json"
 
+func loadChronoFile() ChronoFile {
+	dat, readError := os.ReadFile(ChronoFileName)
+	check(readError)
+
+	var chronoFile ChronoFile
+
+	jsonError := json.Unmarshal(dat, &chronoFile)
+	check(jsonError)
+
+	return chronoFile
+}
+
 func main() {
 	now := time.Now()
 	dateString := now.Format("2006-01-02")
@@ -78,14 +90,7 @@ func main() {
 	if hasArg() {
 		userText := os.Args[1]
 
-		dat, err := os.ReadFile(ChronoFileName)
-		check(err)
-
-		var chronoFile ChronoFile
-
-		err1 := json.Unmarshal(dat, &chronoFile)
-		check(err1)
-		fmt.Println(chronoFile.Logs[0])
+		loadChronoFile()
 
 		oFile := ChronoFile{
 			Logs: []YearLog{
