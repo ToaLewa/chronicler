@@ -90,12 +90,33 @@ func loadChronoFile() (ChronoFile, error) {
 	return chronoFile, nil
 }
 
-func main() {
+type CurrentTimePieces struct {
+	Year       int
+	Month      int
+	Day        int
+	DateString string
+	TimeString string
+}
+
+func getCurrentTimePieces() CurrentTimePieces {
 	now := time.Now()
 	dateString := now.Format("2006-01-02")
 	hour, min, _ := time.Now().Local().Clock()
 	timeString := fmt.Sprintf("%d:%02d", hour, min)
 	year, month, day := now.Date()
+
+	return CurrentTimePieces{
+		Year:       year,
+		Month:      int(month),
+		Day:        day,
+		DateString: dateString,
+		TimeString: timeString,
+	}
+}
+
+func main() {
+
+	timePieces := getCurrentTimePieces()
 
 	if hasArg() {
 		userText := os.Args[1]
@@ -103,22 +124,22 @@ func main() {
 		_, err := loadChronoFile()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			os.Exit(1)
+			// os.Exit(1)
 		}
 
 		oFile := ChronoFile{
 			Logs: []YearLog{
 				{
-					Year: year,
+					Year: timePieces.Year,
 					Months: []MonthLog{{
-						Month: int(month),
+						Month: timePieces.Month,
 						Days: []DayLog{
 							{
-								Day:  day,
-								Date: dateString,
+								Day:  timePieces.Day,
+								Date: timePieces.DateString,
 								Entries: []Entry{
 									{
-										Time: timeString,
+										Time: timePieces.TimeString,
 										Text: userText,
 									},
 								},
@@ -137,7 +158,7 @@ func main() {
 		fmt.Println("Write file")
 
 	} else {
-		fmt.Println(dateString)
+		fmt.Println(timePieces.DateString)
 
 		// Read the current directory (".")
 		entries, err := os.ReadDir("/Users/kkulis/Documents/atg/chrono/")
@@ -148,7 +169,7 @@ func main() {
 			fmt.Println("Files found")
 			fmt.Println(strconv.Itoa(fileCount))
 
-			fileName := "chronicle-" + dateString + ".md"
+			fileName := "chronicle-" + timePieces.DateString + ".md"
 			createFirst(fileName)
 
 		}
