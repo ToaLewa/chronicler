@@ -122,9 +122,9 @@ func main() {
 		userText := os.Args[1]
 
 		_, err := loadChronoFile()
-		if err != nil {
+		if err != nil && err != ErrChronoFileNotFound {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			// os.Exit(1)
+			os.Exit(1)
 		}
 
 		oFile := ChronoFile{
