@@ -1,3 +1,3 @@
-go run main.go "blah"
+go run . "blah"
 
 bat chrono.json
