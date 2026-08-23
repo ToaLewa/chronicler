@@ -75,7 +75,7 @@ func main() {
 		fmt.Println("Write file")
 
 	} else {
-		timePieces := timepieces.GetCurrentTimePieces()
+		timePieces := timepieces.GetCurrent()
 		fmt.Println(timePieces.DateString)
 
 		// Read the current directory (".")

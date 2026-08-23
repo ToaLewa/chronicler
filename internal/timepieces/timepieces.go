@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type CurrentTimePieces struct {
+type Current struct {
 	Year       int
 	Month      int
 	Day        int
@@ -13,14 +13,14 @@ type CurrentTimePieces struct {
 	TimeString string
 }
 
-func GetCurrentTimePieces() CurrentTimePieces {
+func GetCurrent() Current {
 	now := time.Now()
 	dateString := now.Format("2006-01-02")
 	hour, min, _ := time.Now().Local().Clock()
 	timeString := fmt.Sprintf("%d:%02d", hour, min)
 	year, month, day := now.Date()
 
-	return CurrentTimePieces{
+	return Current{
 		Year:       year,
 		Month:      int(month),
 		Day:        day,

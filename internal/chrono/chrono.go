@@ -47,7 +47,7 @@ func Load(fileName string) (ChronoFile, error) {
 }
 
 func AppendLogEntry(chFile ChronoFile, userText string) {
-	timePieces := timepieces.GetCurrentTimePieces()
+	timePieces := timepieces.GetCurrent()
 
 	yearLog, ok := chFile[timePieces.Year]
 	if !ok {
