@@ -46,6 +46,10 @@ func Load(fileName string) (ChronoFile, error) {
 	return chronoFile, nil
 }
 
+func ReadToday() {
+	fmt.Println("Reading ...")
+}
+
 func AppendLogEntry(chFile ChronoFile, userText string) {
 	timePieces := timepieces.GetCurrent()
 

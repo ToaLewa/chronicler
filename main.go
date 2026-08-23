@@ -49,7 +49,7 @@ func main() {
 	flag.Parse()
 
 	if *todayFlag {
-		fmt.Println("Has flag")
+		chrono.ReadToday()
 	}
 
 	if hasArg() {
