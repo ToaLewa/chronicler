@@ -1,4 +1,4 @@
-package main
+package timepieces
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ type CurrentTimePieces struct {
 	TimeString string
 }
 
-func getCurrentTimePieces() CurrentTimePieces {
+func GetCurrentTimePieces() CurrentTimePieces {
 	now := time.Now()
 	dateString := now.Format("2006-01-02")
 	hour, min, _ := time.Now().Local().Clock()
