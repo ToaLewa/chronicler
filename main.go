@@ -4,6 +4,7 @@ import (
 	"chronicler/internal/chrono"
 	"chronicler/internal/timepieces"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 	"strconv"
@@ -43,6 +44,13 @@ func hasArg() bool {
 const ChronoFileName = "chrono.json"
 
 func main() {
+	todayFlag := flag.Bool("today", false, "query today's entries")
+
+	flag.Parse()
+
+	if *todayFlag {
+		fmt.Println("Has flag")
+	}
 
 	if hasArg() {
 		userText := os.Args[1]
