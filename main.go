@@ -128,7 +128,9 @@ func main() {
 			os.Exit(1)
 		}
 
-		if err := os.WriteFile(ChronoFileName, b, 0666); err != nil {
+		writeErr := os.WriteFile(ChronoFileName, b, 0666)
+
+		if writeErr != nil {
 			fmt.Fprintf(os.Stderr, "error: write %s: %v\n", ChronoFileName, err)
 			os.Exit(1)
 		}
