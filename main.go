@@ -51,7 +51,7 @@ func main() {
 	if hasArg() {
 		userText := os.Args[1]
 
-		chFile, err := chrono.Load(ChronoFileName)
+		chData, err := chrono.Load(ChronoFileName)
 		if err != nil && err != chrono.ErrChronoFileNotFound {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
 			os.Exit(1)
@@ -62,13 +62,13 @@ func main() {
 			// chrono.ReadToday()
 		}
 
-		if chFile == nil {
-			chFile = chrono.ChronoData{}
+		if chData == nil {
+			chData = chrono.ChronoData{}
 		}
 
-		chrono.AppendLogEntry(chFile, userText)
+		chrono.AppendLogEntry(chData, userText)
 
-		b, err := json.Marshal(chFile)
+		b, err := json.Marshal(chData)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "error: encode %s: %v\n", ChronoFileName, err)
 			os.Exit(1)
