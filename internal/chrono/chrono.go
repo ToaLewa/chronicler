@@ -9,7 +9,7 @@ import (
 )
 
 // Use .chro file extension if .json is too constraining
-type ChronoFile map[int]YearLog
+type ChronoData map[int]YearLog
 
 type YearLog map[int]MonthLog
 
@@ -27,31 +27,31 @@ type Entry struct {
 
 var ErrChronoFileNotFound = errors.New("chrono file not found")
 
-func Load(fileName string) (ChronoFile, error) {
+func Load(fileName string) (ChronoData, error) {
 	dat, readError := os.ReadFile(fileName)
 	if errors.Is(readError, os.ErrNotExist) {
-		return ChronoFile{}, ErrChronoFileNotFound
+		return ChronoData{}, ErrChronoFileNotFound
 	}
 	if readError != nil {
-		return ChronoFile{}, fmt.Errorf("read %s: %w", fileName, readError)
+		return ChronoData{}, fmt.Errorf("read %s: %w", fileName, readError)
 	}
 
-	var chronoFile ChronoFile
+	var chronoFile ChronoData
 
 	jsonError := json.Unmarshal(dat, &chronoFile)
 	if jsonError != nil {
-		return ChronoFile{}, fmt.Errorf("parse %s: %w", fileName, jsonError)
+		return ChronoData{}, fmt.Errorf("parse %s: %w", fileName, jsonError)
 	}
 
 	return chronoFile, nil
 }
 
-func yearLogExists(curr timepieces.Current, chFile ChronoFile) bool {
+func yearLogExists(curr timepieces.Current, chFile ChronoData) bool {
 	_, ok := chFile[curr.Year]
 	return ok
 }
 
-func monthLogExists(curr timepieces.Current, chFile ChronoFile) bool {
+func monthLogExists(curr timepieces.Current, chFile ChronoData) bool {
 	if !yearLogExists(curr, chFile) {
 		return false
 	}
@@ -61,7 +61,7 @@ func monthLogExists(curr timepieces.Current, chFile ChronoFile) bool {
 	return monthFound
 }
 
-func dayLogExists(curr timepieces.Current, chFile ChronoFile) bool {
+func dayLogExists(curr timepieces.Current, chFile ChronoData) bool {
 	if !monthLogExists(curr, chFile) {
 		return false
 	}
@@ -70,11 +70,11 @@ func dayLogExists(curr timepieces.Current, chFile ChronoFile) bool {
 	return dayFound
 }
 
-func ReadToday(chFile ChronoFile) {
+func ReadToday(chFile ChronoData) {
 	fmt.Println("Reading ...")
 }
 
-func AppendLogEntry(chFile ChronoFile, userText string) {
+func AppendLogEntry(chFile ChronoData, userText string) {
 	timePieces := timepieces.GetCurrent()
 
 	yearLog, ok := chFile[timePieces.Year]

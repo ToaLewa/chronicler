@@ -49,7 +49,7 @@ func main() {
 	flag.Parse()
 
 	if *todayFlag {
-		chrono.ReadToday()
+		// chrono.ReadToday()
 	}
 
 	if hasArg() {
@@ -62,7 +62,7 @@ func main() {
 		}
 
 		if chFile == nil {
-			chFile = chrono.ChronoFile{}
+			chFile = chrono.ChronoData{}
 		}
 
 		chrono.AppendLogEntry(chFile, userText)
