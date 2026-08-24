@@ -58,30 +58,28 @@ func main() {
 		}
 
 		if *todayFlag {
-			fmt.Println("Read")
-			// chrono.ReadToday()
+			chrono.ReadToday(chData)
+		} else {
+			if chData == nil {
+				chData = chrono.ChronoData{}
+			}
+
+			chrono.AppendLogEntry(chData, userText)
+
+			b, err := json.Marshal(chData)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "error: encode %s: %v\n", ChronoFileName, err)
+				os.Exit(1)
+			}
+
+			writeErr := os.WriteFile(ChronoFileName, b, 0666)
+
+			if writeErr != nil {
+				fmt.Fprintf(os.Stderr, "error: write %s: %v\n", ChronoFileName, err)
+				os.Exit(1)
+			}
+			fmt.Println("Write file")
 		}
-
-		if chData == nil {
-			chData = chrono.ChronoData{}
-		}
-
-		chrono.AppendLogEntry(chData, userText)
-
-		b, err := json.Marshal(chData)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "error: encode %s: %v\n", ChronoFileName, err)
-			os.Exit(1)
-		}
-
-		writeErr := os.WriteFile(ChronoFileName, b, 0666)
-
-		if writeErr != nil {
-			fmt.Fprintf(os.Stderr, "error: write %s: %v\n", ChronoFileName, err)
-			os.Exit(1)
-		}
-
-		fmt.Println("Write file")
 
 	} else {
 		timePieces := timepieces.GetCurrent()

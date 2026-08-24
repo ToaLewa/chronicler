@@ -88,8 +88,11 @@ func ReadToday(chData ChronoData) {
 	timePieces := timepieces.GetCurrent()
 	dayLog := getMakeDayLog(timePieces, chData)
 
+	fmt.Println(dayLog.Date)
+
 	for i := 0; i < len(dayLog.Entries); i++ {
-		fmt.Println("Reading ...")
+		entry := dayLog.Entries[i]
+		fmt.Printf("-%s %s\n", entry.Time, entry.Text)
 	}
 }
 
