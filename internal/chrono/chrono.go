@@ -46,7 +46,31 @@ func Load(fileName string) (ChronoFile, error) {
 	return chronoFile, nil
 }
 
-func ReadToday() {
+func yearLogExists(curr timepieces.Current, chFile ChronoFile) bool {
+	_, ok := chFile[curr.Year]
+	return ok
+}
+
+func monthLogExists(curr timepieces.Current, chFile ChronoFile) bool {
+	if !yearLogExists(curr, chFile) {
+		return false
+	}
+
+	_, monthFound := chFile[curr.Year][curr.Month]
+
+	return monthFound
+}
+
+func dayLogExists(curr timepieces.Current, chFile ChronoFile) bool {
+	if !monthLogExists(curr, chFile) {
+		return false
+	}
+
+	_, dayFound := chFile[curr.Year][curr.Month][curr.Day]
+	return dayFound
+}
+
+func ReadToday(chFile ChronoFile) {
 	fmt.Println("Reading ...")
 }
 
