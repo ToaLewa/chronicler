@@ -46,28 +46,42 @@ func Load(fileName string) (ChronoData, error) {
 	return chronoFile, nil
 }
 
-func yearLogExists(curr timepieces.Current, chFile ChronoData) bool {
-	_, ok := chFile[curr.Year]
-	return ok
-}
+func getMakeYearLog(curr timepieces.Current, chFile ChronoData) YearLog {
+	yearLog, exists := chFile[curr.Year]
 
-func monthLogExists(curr timepieces.Current, chFile ChronoData) bool {
-	if !yearLogExists(curr, chFile) {
-		return false
+	if !exists {
+		yearLog = YearLog{}
 	}
 
-	_, monthFound := chFile[curr.Year][curr.Month]
-
-	return monthFound
+	chFile[curr.Year] = yearLog
+	return yearLog
 }
 
-func dayLogExists(curr timepieces.Current, chFile ChronoData) bool {
-	if !monthLogExists(curr, chFile) {
-		return false
+func getMakeMonthLog(curr timepieces.Current, chFile ChronoData) MonthLog {
+	yearLog := getMakeYearLog(curr, chFile)
+	monthLog, exists := yearLog[curr.Month]
+
+	if !exists {
+		monthLog = MonthLog{}
 	}
 
-	_, dayFound := chFile[curr.Year][curr.Month][curr.Day]
-	return dayFound
+	chFile[curr.Year][curr.Month] = monthLog
+	return monthLog
+}
+
+func getMakeDayLog(curr timepieces.Current, chFile ChronoData) DayLog {
+	monthLog := getMakeMonthLog(curr, chFile)
+
+	dayLog, exists := monthLog[curr.Day]
+
+	if !exists {
+		dayLog = DayLog{
+			Date: curr.DateString,
+		}
+	}
+
+	chFile[curr.Year][curr.Month][curr.Day] = dayLog
+	return dayLog
 }
 
 func ReadToday(chFile ChronoData) {
@@ -77,26 +91,11 @@ func ReadToday(chFile ChronoData) {
 func AppendLogEntry(chFile ChronoData, userText string) {
 	timePieces := timepieces.GetCurrent()
 
-	yearLog, ok := chFile[timePieces.Year]
-	if !ok {
-		yearLog = YearLog{}
-		chFile[timePieces.Year] = yearLog
-	}
-
-	monthLog, ok := yearLog[timePieces.Month]
-	if !ok {
-		monthLog = MonthLog{}
-		yearLog[timePieces.Month] = monthLog
-	}
-
-	dayLog, ok := monthLog[timePieces.Day]
-	if !ok {
-		dayLog = DayLog{Date: timePieces.DateString}
-	}
-
+	dayLog := getMakeDayLog(timePieces, chFile)
 	dayLog.Entries = append(dayLog.Entries, Entry{
 		Time: timePieces.TimeString,
 		Text: userText,
 	})
-	monthLog[timePieces.Day] = dayLog
+
+	chFile[timePieces.Year][timePieces.Month][timePieces.Day] = dayLog
 }
