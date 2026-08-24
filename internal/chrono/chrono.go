@@ -85,7 +85,12 @@ func getMakeDayLog(curr timepieces.Current, chFile ChronoData) DayLog {
 }
 
 func ReadToday(chFile ChronoData) {
-	fmt.Println("Reading ...")
+	timePieces := timepieces.GetCurrent()
+	dayLog := getMakeDayLog(timePieces, chFile)
+
+	for i := 0; i < len(dayLog.Entries); i++ {
+		fmt.Println("Reading ...")
+	}
 }
 
 func AppendLogEntry(chFile ChronoData, userText string) {

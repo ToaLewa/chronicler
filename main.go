@@ -48,10 +48,6 @@ func main() {
 
 	flag.Parse()
 
-	if *todayFlag {
-		// chrono.ReadToday()
-	}
-
 	if hasArg() {
 		userText := os.Args[1]
 
@@ -59,6 +55,11 @@ func main() {
 		if err != nil && err != chrono.ErrChronoFileNotFound {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
 			os.Exit(1)
+		}
+
+		if *todayFlag {
+			fmt.Println("Read")
+			// chrono.ReadToday()
 		}
 
 		if chFile == nil {
