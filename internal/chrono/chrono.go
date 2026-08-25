@@ -87,8 +87,8 @@ func getMakeDayLog(curr timepieces.TimePiece, chData ChronoData) DayLog {
 }
 
 func ReadToday(chData ChronoData) {
-	timePieces := timepieces.GetCurrent()
-	dayLog := getMakeDayLog(timePieces, chData)
+	current := timepieces.GetCurrent()
+	dayLog := getMakeDayLog(current, chData)
 
 	printDay(dayLog)
 }
@@ -117,8 +117,8 @@ func printDay(dayLog DayLog) {
 }
 
 func ReadMonth(chData ChronoData) {
-	timePieces := timepieces.GetCurrent()
-	monthLog := getMakeMonthLog(timePieces, chData)
+	current := timepieces.GetCurrent()
+	monthLog := getMakeMonthLog(current, chData)
 
 	keys := make([]int, 0, len(monthLog))
 	for key := range monthLog {
@@ -133,13 +133,13 @@ func ReadMonth(chData ChronoData) {
 }
 
 func AppendLogEntry(chData ChronoData, userText string) {
-	timePieces := timepieces.GetCurrent()
+	current := timepieces.GetCurrent()
 
-	dayLog := getMakeDayLog(timePieces, chData)
+	dayLog := getMakeDayLog(current, chData)
 	dayLog.Entries = append(dayLog.Entries, Entry{
-		Time: timePieces.TimeString,
+		Time: current.TimeString,
 		Text: userText,
 	})
 
-	chData[timePieces.Year][timePieces.Month][timePieces.Day] = dayLog
+	chData[current.Year][current.Month][current.Day] = dayLog
 }
