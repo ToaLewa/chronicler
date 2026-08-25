@@ -107,6 +107,7 @@ func ReadMonth(chData ChronoData) {
 	for _, value := range monthLog {
 		//Might need to do a key sort
 		printDay(value)
+		fmt.Println()
 	}
 }
 
