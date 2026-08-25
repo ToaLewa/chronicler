@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sort"
 )
 
 // Use .chro file extension if .json is too constraining
@@ -104,9 +105,14 @@ func ReadMonth(chData ChronoData) {
 	timePieces := timepieces.GetCurrent()
 	monthLog := getMakeMonthLog(timePieces, chData)
 
-	for _, value := range monthLog {
-		//Might need to do a key sort
-		printDay(value)
+	keys := make([]int, 0, len(monthLog))
+	for key := range monthLog {
+		keys = append(keys, key)
+	}
+	sort.Ints(keys)
+
+	for _, key := range keys {
+		printDay(monthLog[key])
 		fmt.Println()
 	}
 }
