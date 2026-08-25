@@ -88,11 +88,25 @@ func ReadToday(chData ChronoData) {
 	timePieces := timepieces.GetCurrent()
 	dayLog := getMakeDayLog(timePieces, chData)
 
+	printDay(dayLog)
+}
+
+func printDay(dayLog DayLog) {
 	fmt.Println(dayLog.Date)
 
 	for i := 0; i < len(dayLog.Entries); i++ {
 		entry := dayLog.Entries[i]
 		fmt.Printf("-%s %s\n", entry.Time, entry.Text)
+	}
+}
+
+func ReadMonth(chData ChronoData) {
+	timePieces := timepieces.GetCurrent()
+	monthLog := getMakeMonthLog(timePieces, chData)
+
+	for _, value := range monthLog {
+		//Might need to do a key sort
+		printDay(value)
 	}
 }
 

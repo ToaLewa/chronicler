@@ -45,6 +45,7 @@ const ChronoFileName = "chrono.json"
 
 func main() {
 	todayFlag := flag.Bool("today", false, "query today's entries")
+	monthFlag := flag.Bool("month", false, "query entries for the current month")
 
 	flag.Parse()
 
@@ -59,6 +60,8 @@ func main() {
 
 		if *todayFlag {
 			chrono.ReadToday(chData)
+		} else if *monthFlag {
+			chrono.ReadMonth(chData)
 		} else {
 			if chData == nil {
 				chData = chrono.ChronoData{}
