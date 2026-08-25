@@ -98,6 +98,7 @@ func ReadDays(chData ChronoData, daysBack int) {
 
 	now := time.Now()
 	then := now.AddDate(0, 0, -daysBack)
+	//Can loop through time.AddDate to fetch
 	past := timepieces.Get(then)
 
 	fmt.Printf("%s\n", current.DateString)
