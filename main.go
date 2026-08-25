@@ -44,6 +44,16 @@ func hasArg() bool {
 const ChronoFileName = "chrono.json"
 
 func main() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: chronicler [options] [text]\n\n")
+		fmt.Fprintf(os.Stderr, "Examples:\n")
+		fmt.Fprintf(os.Stderr, "  chronicler \"wrote project notes\"\n")
+		fmt.Fprintf(os.Stderr, "  chronicler --today\n")
+		fmt.Fprintf(os.Stderr, "  chronicler --month\n\n")
+		fmt.Fprintf(os.Stderr, "Options:\n")
+		flag.PrintDefaults()
+	}
+
 	todayFlag := flag.Bool("today", false, "query today's entries")
 	monthFlag := flag.Bool("month", false, "query entries for the current month")
 
