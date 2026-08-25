@@ -41,6 +41,28 @@ func hasArg() bool {
 
 const ChronoFileName = "chrono.json"
 
+func writeLog(chData chrono.ChronoData, userText string) {
+	if chData == nil {
+		chData = chrono.ChronoData{}
+	}
+
+	chrono.AppendLogEntry(chData, userText)
+
+	b, err := json.Marshal(chData)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: encode %s: %v\n", ChronoFileName, err)
+		os.Exit(1)
+	}
+
+	writeErr := os.WriteFile(ChronoFileName, b, 0666)
+
+	if writeErr != nil {
+		fmt.Fprintf(os.Stderr, "error: write %s: %v\n", ChronoFileName, err)
+		os.Exit(1)
+	}
+	fmt.Println("Wrote to chronicler file")
+}
+
 func main() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: chronicler [options] [text]\n\n")
@@ -71,25 +93,7 @@ func main() {
 		} else if *monthFlag {
 			chrono.ReadMonth(chData)
 		} else {
-			if chData == nil {
-				chData = chrono.ChronoData{}
-			}
-
-			chrono.AppendLogEntry(chData, userText)
-
-			b, err := json.Marshal(chData)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "error: encode %s: %v\n", ChronoFileName, err)
-				os.Exit(1)
-			}
-
-			writeErr := os.WriteFile(ChronoFileName, b, 0666)
-
-			if writeErr != nil {
-				fmt.Fprintf(os.Stderr, "error: write %s: %v\n", ChronoFileName, err)
-				os.Exit(1)
-			}
-			fmt.Println("Write file")
+			writeLog(chData, userText)
 		}
 
 	}
