@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"time"
 )
 
 // Use .chro file extension if .json is too constraining
@@ -47,7 +48,7 @@ func Load(fileName string) (ChronoData, error) {
 	return chronoFile, nil
 }
 
-func getMakeYearLog(curr timepieces.Current, chData ChronoData) YearLog {
+func getMakeYearLog(curr timepieces.TimePiece, chData ChronoData) YearLog {
 	yearLog, exists := chData[curr.Year]
 
 	if !exists {
@@ -58,7 +59,7 @@ func getMakeYearLog(curr timepieces.Current, chData ChronoData) YearLog {
 	return yearLog
 }
 
-func getMakeMonthLog(curr timepieces.Current, chData ChronoData) MonthLog {
+func getMakeMonthLog(curr timepieces.TimePiece, chData ChronoData) MonthLog {
 	yearLog := getMakeYearLog(curr, chData)
 	monthLog, exists := yearLog[curr.Month]
 
@@ -70,7 +71,7 @@ func getMakeMonthLog(curr timepieces.Current, chData ChronoData) MonthLog {
 	return monthLog
 }
 
-func getMakeDayLog(curr timepieces.Current, chData ChronoData) DayLog {
+func getMakeDayLog(curr timepieces.TimePiece, chData ChronoData) DayLog {
 	monthLog := getMakeMonthLog(curr, chData)
 
 	dayLog, exists := monthLog[curr.Day]
@@ -90,6 +91,20 @@ func ReadToday(chData ChronoData) {
 	dayLog := getMakeDayLog(timePieces, chData)
 
 	printDay(dayLog)
+}
+
+func ReadDays(chData ChronoData, daysBack int) {
+	current := timepieces.GetCurrent()
+
+	now := time.Now()
+	then := now.AddDate(0, 0, -daysBack)
+	past := timepieces.Get(then)
+
+	fmt.Printf("%s\n", current.DateString)
+	fmt.Printf("%s\n", past.DateString)
+	// dayLog := getMakeDayLog(timePieces, chData)
+	//
+	// printDay(dayLog)
 }
 
 func printDay(dayLog DayLog) {
