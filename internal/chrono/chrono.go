@@ -90,7 +90,7 @@ func ReadToday(chData ChronoData) {
 	current := timepieces.GetCurrent()
 	dayLog := getMakeDayLog(current, chData)
 
-	printDay(dayLog)
+	printDayEditMode(dayLog)
 }
 
 func ReadDays(chData ChronoData, daysBack int) {
@@ -114,6 +114,15 @@ func printDay(dayLog DayLog) {
 	for i := 0; i < len(dayLog.Entries); i++ {
 		entry := dayLog.Entries[i]
 		fmt.Printf("-%s %s\n", entry.Time, entry.Text)
+	}
+}
+
+func printDayEditMode(dayLog DayLog) {
+	fmt.Println(dayLog.Date)
+
+	for i := 0; i < len(dayLog.Entries); i++ {
+		entry := dayLog.Entries[i]
+		fmt.Printf("%d: %s %s\n", i, entry.Time, entry.Text)
 	}
 }
 
@@ -143,4 +152,8 @@ func AppendLogEntry(chData ChronoData, userText string) {
 	})
 
 	chData[current.Year][current.Month][current.Day] = dayLog
+}
+
+func EditEntry() {
+	//Unimplemented
 }
