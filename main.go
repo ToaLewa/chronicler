@@ -77,6 +77,7 @@ func main() {
 	todayFlag := flag.Bool("today", false, "query today's entries")
 	monthFlag := flag.Bool("month", false, "query entries for the current month")
 	daysFlag := flag.Int("days", 0, "query n days back")
+	editFlag := flag.Bool("edit", false, "edit journal")
 
 	flag.Parse()
 
@@ -93,6 +94,8 @@ func main() {
 			chrono.ReadToday(chData)
 		} else if *monthFlag {
 			chrono.ReadMonth(chData)
+		} else if *editFlag {
+			fmt.Println("Edit")
 		} else if *daysFlag > 0 {
 			chrono.ReadDays(chData, *daysFlag)
 		} else {
