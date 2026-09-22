@@ -90,7 +90,7 @@ func ReadToday(chData ChronoData) {
 	current := timepieces.GetCurrent()
 	dayLog := getMakeDayLog(current, chData)
 
-	printDayEditMode(dayLog)
+	printDay(dayLog)
 }
 
 func ReadDays(chData ChronoData, daysBack int) {
