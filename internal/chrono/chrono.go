@@ -106,12 +106,17 @@ func ReadDays(chData ChronoData, daysBack int) {
 }
 
 func printDay(dayLog DayLog) {
-	fmt.Println(dayLog.Date)
+	if len(dayLog.Entries) > 0 {
+		fmt.Println(dayLog.Date)
 
-	for i := 0; i < len(dayLog.Entries); i++ {
-		entry := dayLog.Entries[i]
-		fmt.Printf("-%s %s\n", entry.Time, entry.Text)
+		for i := 0; i < len(dayLog.Entries); i++ {
+			entry := dayLog.Entries[i]
+			fmt.Printf("-%s %s\n", entry.Time, entry.Text)
+		}
+
+		fmt.Println()
 	}
+
 }
 
 func printDayEditMode(dayLog DayLog) {
