@@ -99,11 +99,7 @@ func ReadDays(chData ChronoData, daysBack int) {
 
 	for i := range daysBack {
 		cursorDate := then.AddDate(0, 0, i)
-		cursorTimePiece := timepieces.TimePiece{
-			Year:  cursorDate.Year(),
-			Month: int(cursorDate.Month()),
-			Day:   cursorDate.Day(),
-		}
+		cursorTimePiece := timepieces.Get(cursorDate)
 		dayLog := getMakeDayLog(cursorTimePiece, chData)
 		printDay(dayLog)
 	}
