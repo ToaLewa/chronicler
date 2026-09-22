@@ -94,15 +94,8 @@ func ReadToday(chData ChronoData) {
 }
 
 func ReadDays(chData ChronoData, daysBack int) {
-	current := timepieces.GetCurrent()
-
 	now := time.Now()
 	then := now.AddDate(0, 0, -daysBack)
-	//Can loop through time.AddDate to fetch
-	past := timepieces.Get(then)
-
-	fmt.Printf("%s\n", current.DateString)
-	fmt.Printf("%s\n", past.DateString)
 
 	for i := range daysBack {
 		cursorDate := then.AddDate(0, 0, i)
@@ -112,7 +105,7 @@ func ReadDays(chData ChronoData, daysBack int) {
 			Day:   cursorDate.Day(),
 		}
 		dayLog := getMakeDayLog(cursorTimePiece, chData)
-		printDayEditMode(dayLog)
+		printDay(dayLog)
 	}
 }
 
