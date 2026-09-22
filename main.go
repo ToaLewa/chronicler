@@ -95,7 +95,12 @@ func main() {
 		} else if *monthFlag {
 			chrono.ReadMonth(chData)
 		} else if *editFlag {
-			fmt.Println("Edit")
+			chrono.ReadToday(chData)
+			var index int
+			// fmt.Println("Edit")
+			fmt.Scanln(&index)
+			fmt.Print("\033[H\033[K")
+			fmt.Println(index)
 		} else if *daysFlag > 0 {
 			chrono.ReadDays(chData, *daysFlag)
 		} else {
