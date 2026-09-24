@@ -54,14 +54,14 @@ func writeLog(chData chrono.ChronoData, userText string) {
 
 	b, err := json.Marshal(chData)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: encode %s: %v\n", ChronoFileName, err)
+		fmt.Fprintf(os.Stderr, "error: encode %s: %v\n", ChronoFilePath, err)
 		os.Exit(1)
 	}
 
-	writeErr := os.WriteFile(ChronoFileName, b, 0666)
+	writeErr := os.WriteFile(ChronoFilePath, b, 0666)
 
 	if writeErr != nil {
-		fmt.Fprintf(os.Stderr, "error: write %s: %v\n", ChronoFileName, err)
+		fmt.Fprintf(os.Stderr, "error: write %s: %v\n", ChronoFilePath, err)
 		os.Exit(1)
 	}
 	fmt.Println("Wrote to chronicler file")
@@ -71,17 +71,16 @@ func ensureChronoDir() {
 	userDir, _ := os.UserConfigDir()
 	ChronoDir = filepath.Join(userDir, "chrono")
 
-	fmt.Println(ChronoDir)
 	_, dirErr := os.Stat(ChronoDir)
 
 	if dirErr != nil {
-		fmt.Println("Making dir")
 		os.MkdirAll(ChronoDir, 0755)
 	}
 }
 
 func main() {
 	ensureChronoDir()
+	ChronoFilePath = filepath.Join(ChronoDir, ChronoFileName)
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: chronicler [options] [text]\n\n")
@@ -103,7 +102,7 @@ func main() {
 	if hasArg() {
 		userText := os.Args[1]
 
-		chData, err := chrono.Load(ChronoFileName)
+		chData, err := chrono.Load(ChronoFilePath)
 		if err != nil && err != chrono.ErrChronoFileNotFound {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
 			os.Exit(1)
