@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -44,6 +43,7 @@ func hasArg() bool {
 const ChronoFileName = "chrono.json"
 
 var ChronoDir string
+var ChronoFilePath string
 
 func writeLog(chData chrono.ChronoData, userText string) {
 	if chData == nil {
@@ -67,17 +67,21 @@ func writeLog(chData chrono.ChronoData, userText string) {
 	fmt.Println("Wrote to chronicler file")
 }
 
-func main() {
+func ensureChronoDir() {
 	userDir, _ := os.UserConfigDir()
 	ChronoDir = filepath.Join(userDir, "chrono")
 
-	info, dirErr := os.Stat(ChronoDir)
+	fmt.Println(ChronoDir)
+	_, dirErr := os.Stat(ChronoDir)
 
 	if dirErr != nil {
-		log.Fatal("Chrono dir doesn't exist")
+		fmt.Println("Making dir")
+		os.MkdirAll(ChronoDir, 0755)
 	}
+}
 
-	fmt.Println(info.IsDir())
+func main() {
+	ensureChronoDir()
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: chronicler [options] [text]\n\n")
