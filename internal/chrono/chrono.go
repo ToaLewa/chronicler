@@ -97,7 +97,11 @@ func PrintTodayEditPick(chData ChronoData, pick int) {
 	current := timepieces.GetCurrent()
 	dayLog := getMakeDayLog(current, chData)
 
-	fmt.Println(dayLog.Entries[pick])
+	if len(dayLog.Entries) < pick-1 {
+		fmt.Println("Index out of range.")
+	} else {
+		fmt.Println(dayLog.Entries[pick])
+	}
 }
 
 func ReadTodayEditMode(chData ChronoData) {
