@@ -93,6 +93,13 @@ func ReadToday(chData ChronoData) {
 	printDay(dayLog)
 }
 
+func ReadTodayEditMode(chData ChronoData) {
+	current := timepieces.GetCurrent()
+	dayLog := getMakeDayLog(current, chData)
+
+	printDayEditMode(dayLog)
+}
+
 func ReadDays(chData ChronoData, daysBack int) {
 	now := time.Now()
 	then := now.AddDate(0, 0, -daysBack)
