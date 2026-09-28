@@ -90,6 +90,8 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  chronicler --month\n\n")
 		fmt.Fprintf(os.Stderr, "Options:\n")
 		flag.PrintDefaults()
+		info := "\nInfo:\n  Chronicler journal file stored at " + ChronoFilePath + "\n"
+		fmt.Fprintf(os.Stderr, info)
 	}
 
 	todayFlag := flag.Bool("today", false, "query today's entries")
