@@ -121,6 +121,8 @@ func main() {
 			fmt.Scanln(&index)
 			fmt.Print("\033[H\033[K") // clear screen?
 
+			chrono.PrintTodayEditPick(chData, index)
+
 			// fmt.Println(index)
 		} else if *daysFlag > 0 {
 			chrono.ReadDays(chData, *daysFlag)

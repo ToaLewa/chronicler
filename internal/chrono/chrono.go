@@ -93,6 +93,13 @@ func ReadToday(chData ChronoData) {
 	printDay(dayLog)
 }
 
+func PrintTodayEditPick(chData ChronoData, pick int) {
+	current := timepieces.GetCurrent()
+	dayLog := getMakeDayLog(current, chData)
+
+	fmt.Println(dayLog.Entries[pick])
+}
+
 func ReadTodayEditMode(chData ChronoData) {
 	current := timepieces.GetCurrent()
 	dayLog := getMakeDayLog(current, chData)
