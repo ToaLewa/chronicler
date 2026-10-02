@@ -121,6 +121,8 @@ func ReadDays(chData ChronoData, daysBack int) {
 		dayLog := getMakeDayLog(cursorTimePiece, chData)
 		printDay(dayLog)
 	}
+
+	ReadToday(chData)
 }
 
 func printDay(dayLog DayLog) {
