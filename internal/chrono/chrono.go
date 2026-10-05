@@ -13,6 +13,22 @@ import (
 // Use .chro file extension if .json is too constraining
 type ChronoData map[int]YearLog
 
+func (chData ChronoData) Save(filePath string) {
+	b, err := json.Marshal(chData)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: encode %s: %v\n", filePath, err)
+		os.Exit(1)
+	}
+
+	writeErr := os.WriteFile(filePath, b, 0666)
+
+	if writeErr != nil {
+		fmt.Fprintf(os.Stderr, "error: write %s: %v\n", filePath, err)
+		os.Exit(1)
+	}
+	fmt.Println("Wrote to chronicler file")
+}
+
 type YearLog map[int]MonthLog
 
 type MonthLog map[int]DayLog
