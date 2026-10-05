@@ -202,4 +202,5 @@ func EditTodayEntryTime(chData ChronoData, index int, new string) {
 	current := timepieces.GetCurrent()
 	dayLog := getMakeDayLog(current, chData)
 	dayLog.Entries[index].Time = new
+	//need a sort here
 }
