@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"chronicler/internal/chrono"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -52,20 +51,7 @@ func writeLog(chData chrono.ChronoData, userText string) {
 	}
 
 	chrono.AppendLogEntry(chData, userText)
-
-	b, err := json.Marshal(chData)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: encode %s: %v\n", ChronoFilePath, err)
-		os.Exit(1)
-	}
-
-	writeErr := os.WriteFile(ChronoFilePath, b, 0666)
-
-	if writeErr != nil {
-		fmt.Fprintf(os.Stderr, "error: write %s: %v\n", ChronoFilePath, err)
-		os.Exit(1)
-	}
-	fmt.Println("Wrote to chronicler file")
+	chData.Save(ChronoFilePath)
 }
 
 func ensureChronoDir() {
