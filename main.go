@@ -100,7 +100,6 @@ func main() {
 			chrono.ReadTodayEditMode(chData)
 			var index int
 			fmt.Scanln(&index)
-			// fmt.Print("\033[H\033[K") // clear screen?
 
 			fmt.Printf("Editing: ")
 			chrono.PrintTodayEditPick(chData, index)
