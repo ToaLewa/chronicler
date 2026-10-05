@@ -2,10 +2,12 @@ package chrono
 
 import (
 	"chronicler/internal/timepieces"
+	"cmp"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
+	"slices"
 	"sort"
 	"time"
 )
@@ -202,5 +204,9 @@ func EditTodayEntryTime(chData ChronoData, index int, new string) {
 	current := timepieces.GetCurrent()
 	dayLog := getMakeDayLog(current, chData)
 	dayLog.Entries[index].Time = new
-	//need a sort here
+	slices.SortFunc(dayLog.Entries, sortEntriesByTime)
+}
+
+func sortEntriesByTime(a, b Entry) int {
+	return cmp.Compare(a.Time, b.Time)
 }
