@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"chronicler/internal/chrono"
 	"encoding/json"
 	"flag"
@@ -124,7 +125,12 @@ func main() {
 			chrono.PrintTodayEditPick(chData, index)
 
 			var saveStr string
-			fmt.Scanln(&saveStr)
+
+			scanner := bufio.NewScanner(os.Stdin)
+
+			if scanner.Scan() {
+				saveStr = scanner.Text()
+			}
 
 			chrono.EditTodayEntry(chData, index, saveStr)
 			chData.Save(ChronoFilePath)
