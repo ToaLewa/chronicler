@@ -80,6 +80,7 @@ func main() {
 	monthFlag := flag.Bool("month", false, "query entries for the current month")
 	daysFlag := flag.Int("days", 0, "query n days back")
 	editFlag := flag.Bool("edit", false, "edit journal")
+	editTimeFlag := flag.Bool("editTime", false, "edit journal time")
 
 	flag.Parse()
 
@@ -112,7 +113,25 @@ func main() {
 				saveStr = scanner.Text()
 			}
 
-			chrono.EditTodayEntry(chData, index, saveStr)
+			chrono.EditTodayEntryText(chData, index, saveStr)
+			chData.Save(ChronoFilePath)
+		} else if *editTimeFlag {
+			chrono.ReadTodayEditMode(chData)
+			var index int
+			fmt.Scanln(&index)
+
+			fmt.Printf("Editing: ")
+			chrono.PrintTodayEditPick(chData, index)
+
+			var saveStr string
+
+			scanner := bufio.NewScanner(os.Stdin)
+
+			if scanner.Scan() {
+				saveStr = scanner.Text()
+			}
+
+			chrono.EditTodayEntryTime(chData, index, saveStr)
 			chData.Save(ChronoFilePath)
 		} else if *daysFlag > 0 {
 			chrono.ReadDays(chData, *daysFlag)
