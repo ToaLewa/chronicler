@@ -31,11 +31,6 @@ type frontmatter struct {
 // 	bullets []Entry
 // }
 
-func createFirst(fileName string) {
-	//Unimplemented
-	fmt.Println(fileName)
-}
-
 func hasArg() bool {
 	return len(os.Args) > 1
 }
