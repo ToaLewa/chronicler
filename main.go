@@ -133,6 +133,7 @@ func main() {
 
 			chrono.EditTodayEntryTime(chData, index, saveStr)
 			chData.Save(ChronoFilePath)
+			chrono.ReadToday(chData)
 		} else if *daysFlag > 0 {
 			chrono.ReadDays(chData, *daysFlag)
 		} else {
