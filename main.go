@@ -115,6 +115,7 @@ func main() {
 
 			chrono.EditTodayEntryText(chData, index, saveStr)
 			chData.Save(ChronoFilePath)
+			chrono.ReadToday(chData)
 		} else if *editTimeFlag {
 			chrono.ReadTodayEditMode(chData)
 			var index int
