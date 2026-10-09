@@ -138,7 +138,11 @@ func main() {
 		} else if *daysFlag > 0 {
 			chrono.ReadDays(chData, *daysFlag)
 		} else {
-			writeLog(chData, userText)
+			if len(os.Args) > 2 {
+				fmt.Println("Edit unimplemented")
+			} else {
+				writeLog(chData, userText)
+			}
 		}
 
 	}
