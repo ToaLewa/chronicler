@@ -49,6 +49,15 @@ func writeLog(chData chrono.ChronoData, userText string) {
 	chData.Save(ChronoFilePath)
 }
 
+func writeLogWithTime(chData chrono.ChronoData, userText string, time string) {
+	if chData == nil {
+		chData = chrono.ChronoData{}
+	}
+
+	chrono.AppendLogEntryWithTime(chData, userText, time)
+	chData.Save(ChronoFilePath)
+}
+
 func ensureChronoDir() {
 	userDir, _ := os.UserConfigDir()
 	ChronoDir = filepath.Join(userDir, "chrono")
@@ -139,7 +148,7 @@ func main() {
 			chrono.ReadDays(chData, *daysFlag)
 		} else {
 			if len(os.Args) > 2 {
-				fmt.Println("Edit unimplemented")
+				writeLogWithTime(chData, userText, os.Args[2])
 			} else {
 				writeLog(chData, userText)
 			}

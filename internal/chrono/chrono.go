@@ -182,6 +182,18 @@ func ReadMonth(chData ChronoData) {
 	}
 }
 
+func AppendLogEntryWithTime(chData ChronoData, userText string, time string) {
+	current := timepieces.GetCurrent()
+
+	dayLog := getMakeDayLog(current, chData)
+	dayLog.Entries = append(dayLog.Entries, Entry{
+		Time: time,
+		Text: userText,
+	})
+
+	chData[current.Year][current.Month][current.Day] = dayLog
+	slices.SortFunc(dayLog.Entries, sortEntriesByTime)
+}
 func AppendLogEntry(chData ChronoData, userText string) {
 	current := timepieces.GetCurrent()
 
