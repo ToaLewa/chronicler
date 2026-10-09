@@ -206,6 +206,12 @@ func AppendLogEntry(chData ChronoData, userText string) {
 	chData[current.Year][current.Month][current.Day] = dayLog
 }
 
+func DropTodayEntry(chData ChronoData, index int) {
+	current := timepieces.GetCurrent()
+	dayLog := getMakeDayLog(current, chData)
+	dayLog.Entries = slices.Delete(dayLog.Entries, index, index+1)
+}
+
 func EditTodayEntryText(chData ChronoData, index int, new string) {
 	current := timepieces.GetCurrent()
 	dayLog := getMakeDayLog(current, chData)

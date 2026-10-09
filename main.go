@@ -72,7 +72,7 @@ func ensureChronoDir() {
 }
 
 func main() {
-	version = "0.2.0"
+	version = "0.3.0"
 	ensureChronoDir()
 	ChronoFilePath = filepath.Join(ChronoDir, ChronoFileName)
 
@@ -93,6 +93,7 @@ func main() {
 	monthFlag := flag.Bool("month", false, "query entries for the current month")
 	daysFlag := flag.Int("days", 0, "query n days back")
 	editFlag := flag.Bool("edit", false, "edit journal")
+	deleteFlag := flag.Bool("delete", false, "delete journal entry")
 	editTimeFlag := flag.Bool("editTime", false, "edit journal time")
 
 	flag.Parse()
@@ -129,6 +130,17 @@ func main() {
 			}
 
 			chrono.EditTodayEntryText(chData, index, saveStr)
+			chData.Save(ChronoFilePath)
+			chrono.ReadToday(chData)
+		} else if *deleteFlag {
+			chrono.ReadTodayEditMode(chData)
+			var index int
+			fmt.Scanln(&index)
+
+			fmt.Printf("Deleting: ")
+			chrono.PrintTodayEditPick(chData, index)
+
+			chrono.DropTodayEntry(chData, index)
 			chData.Save(ChronoFilePath)
 			chrono.ReadToday(chData)
 		} else if *editTimeFlag {
