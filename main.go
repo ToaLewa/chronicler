@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 )
 
+var version string
+
 func check(e error) {
 	if e != nil {
 		panic(e)
@@ -70,6 +72,7 @@ func ensureChronoDir() {
 }
 
 func main() {
+	version = "0.1.0"
 	ensureChronoDir()
 	ChronoFilePath = filepath.Join(ChronoDir, ChronoFileName)
 
@@ -85,6 +88,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, info)
 	}
 
+	versionFlag := flag.Bool("version", false, "prints version")
 	todayFlag := flag.Bool("today", false, "query today's entries")
 	monthFlag := flag.Bool("month", false, "query entries for the current month")
 	daysFlag := flag.Int("days", 0, "query n days back")
@@ -106,6 +110,8 @@ func main() {
 			chrono.ReadToday(chData)
 		} else if *monthFlag {
 			chrono.ReadMonth(chData)
+		} else if *versionFlag {
+			fmt.Println(version)
 		} else if *editFlag {
 			chrono.ReadTodayEditMode(chData)
 			var index int
