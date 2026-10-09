@@ -210,6 +210,7 @@ func DropTodayEntry(chData ChronoData, index int) {
 	current := timepieces.GetCurrent()
 	dayLog := getMakeDayLog(current, chData)
 	dayLog.Entries = slices.Delete(dayLog.Entries, index, index+1)
+	//When you remove elements using any of these techniques, the underlying array still holds a reference to the deleted element at the very end of its capacity.
 }
 
 func EditTodayEntryText(chData ChronoData, index int, new string) {
