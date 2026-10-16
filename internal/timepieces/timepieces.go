@@ -20,7 +20,7 @@ func GetCurrent() TimePiece {
 
 func Get(then time.Time) TimePiece {
 	dateString := then.Format("2006-01-02")
-	hour, min, _ := time.Now().Local().Clock()
+	hour, min, _ := then.Local().Clock()
 	timeString := fmt.Sprintf("%d:%02d", hour, min)
 	year, month, day := then.Date()
 
