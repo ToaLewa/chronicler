@@ -166,11 +166,13 @@ func main() {
 			chrono.ReadDays(chData, *daysFlag)
 		} else {
 			if len(os.Args) > 2 {
-				_, err := chrono.NormalizeTime(os.Args[2])
-				if err != nil {
-					fmt.Println(err)
+				timeArg := os.Args[2]
+
+				_, formatError := chrono.NormalizeTime(timeArg)
+				if formatError != nil {
+					fmt.Println(formatError)
 				} else {
-					writeLogWithTime(chData, userText, os.Args[2])
+					writeLogWithTime(chData, userText, timeArg)
 				}
 			} else {
 				writeLog(chData, userText)
