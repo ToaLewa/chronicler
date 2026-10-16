@@ -192,7 +192,7 @@ func AppendLogEntryWithTime(chData ChronoData, userText string, time string) {
 	})
 
 	chData[current.Year][current.Month][current.Day] = dayLog
-	slices.SortFunc(dayLog.Entries, sortEntriesByTime)
+	slices.SortFunc(dayLog.Entries, compareEntriesByTime)
 }
 func AppendLogEntry(chData ChronoData, userText string) {
 	current := timepieces.GetCurrent()
@@ -223,10 +223,10 @@ func EditTodayEntryTime(chData ChronoData, index int, new string) {
 	current := timepieces.GetCurrent()
 	dayLog := getMakeDayLog(current, chData)
 	dayLog.Entries[index].Time = new
-	slices.SortFunc(dayLog.Entries, sortEntriesByTime)
+	slices.SortFunc(dayLog.Entries, compareEntriesByTime)
 }
 
-func sortEntriesByTime(a, b Entry) int {
+func compareEntriesByTime(a, b Entry) int {
 	normalizedA, _ := normalizeTime(a.Time)
 	normalizedB, _ := normalizeTime(b.Time)
 	return cmp.Compare(normalizedA, normalizedB)

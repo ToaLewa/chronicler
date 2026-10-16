@@ -2,15 +2,15 @@ package chrono
 
 import "testing"
 
-func TestSortByTime(t *testing.T) {
+func TestCompareByTime(t *testing.T) {
 	a := Entry{Time: "03:00", Text: "a"}
 	b := Entry{Time: "04:00", Text: "b"}
 	c := Entry{Time: "03:01", Text: "c"}
 	d := Entry{Time: "04:00", Text: "d"}
-	abCompare := sortEntriesByTime(a, b)
-	baCompare := sortEntriesByTime(b, a)
-	acCompare := sortEntriesByTime(a, c)
-	bdCompare := sortEntriesByTime(b, d)
+	abCompare := compareEntriesByTime(a, b)
+	baCompare := compareEntriesByTime(b, a)
+	acCompare := compareEntriesByTime(a, c)
+	bdCompare := compareEntriesByTime(b, d)
 
 	if abCompare != -1 {
 		t.Errorf("a should be smaller than b. Got: %d", abCompare)
