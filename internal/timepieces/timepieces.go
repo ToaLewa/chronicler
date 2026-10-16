@@ -13,6 +13,7 @@ type TimePiece struct {
 	TimeString string
 }
 
+// Duplicate code
 func GetCurrent() TimePiece {
 	now := time.Now()
 	dateString := now.Format("2006-01-02")
