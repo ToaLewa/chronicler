@@ -227,15 +227,15 @@ func EditTodayEntryTime(chData ChronoData, index int, new string) {
 }
 
 func compareEntriesByTime(a, b Entry) int {
-	normalizedA, _ := normalizeTime(a.Time)
-	normalizedB, _ := normalizeTime(b.Time)
+	normalizedA, _ := NormalizeTime(a.Time)
+	normalizedB, _ := NormalizeTime(b.Time)
 	return cmp.Compare(normalizedA, normalizedB)
 }
 
-func normalizeTime(s string) (string, error) {
+func NormalizeTime(s string) (string, error) {
 	t, err := time.Parse("15:04", s)
 	if err != nil {
-		return "", err
+		return "", errors.New("\"" + s + "\"" + " " + "does not conform to hh:mm format.")
 	}
 	return t.Format("15:04"), nil
 }
