@@ -71,6 +71,8 @@ func ensureChronoDir() {
 	}
 }
 
+// Consider testing the cli interface and throw errors for the expected bad flags and such.
+// To test, likely need to either override os.Args params, or just pass args to a cli wrapper that knows nothing about args
 func main() {
 	version = "0.4.0"
 	ensureChronoDir()
