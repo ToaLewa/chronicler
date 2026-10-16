@@ -72,7 +72,7 @@ func ensureChronoDir() {
 }
 
 func main() {
-	version = "0.3.0"
+	version = "0.4.0"
 	ensureChronoDir()
 	ChronoFilePath = filepath.Join(ChronoDir, ChronoFileName)
 
