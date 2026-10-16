@@ -1,6 +1,9 @@
 package chrono
 
-import "testing"
+import (
+	"chronicler/internal/timepieces"
+	"testing"
+)
 
 func TestCompareByTime(t *testing.T) {
 	a := Entry{Time: "03:00", Text: "a"}
@@ -26,5 +29,22 @@ func TestCompareByTime(t *testing.T) {
 
 	if bdCompare != 0 {
 		t.Errorf("b should be equal to d. Got: %d", bdCompare)
+	}
+}
+
+func TestDropTodayEntryPersistsDeletedEntry(t *testing.T) {
+	chData := ChronoData{}
+	AppendLogEntryWithTime(chData, "first", "09:00")
+	AppendLogEntryWithTime(chData, "second", "10:00")
+
+	DropTodayEntry(chData, 0)
+
+	current := timepieces.GetCurrent()
+	entries := chData[current.Year][current.Month][current.Day].Entries
+	if len(entries) != 1 {
+		t.Fatalf("expected one entry after deletion, got %d", len(entries))
+	}
+	if entries[0].Text != "second" {
+		t.Errorf("expected remaining entry to be second, got %q", entries[0].Text)
 	}
 }
