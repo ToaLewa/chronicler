@@ -110,12 +110,16 @@ func main() {
 		}
 
 		if *todayFlag {
+			//DisplayToday
 			chrono.ReadToday(chData)
 		} else if *monthFlag {
+			//DisplayMonth
 			chrono.ReadMonth(chData)
 		} else if *versionFlag {
+			//DisplayVersion
 			fmt.Println(version)
 		} else if *editFlag {
+			//EditEntryText
 			chrono.ReadTodayEditMode(chData)
 			var index int
 			fmt.Scanln(&index)
@@ -135,6 +139,7 @@ func main() {
 			chData.Save(ChronoFilePath)
 			chrono.ReadToday(chData)
 		} else if *deleteFlag {
+			//DeleteEntry
 			chrono.ReadTodayEditMode(chData)
 			var index int
 			fmt.Scanln(&index)
@@ -146,6 +151,7 @@ func main() {
 			chData.Save(ChronoFilePath)
 			chrono.ReadToday(chData)
 		} else if *editTimeFlag {
+			//EditEntryTime
 			chrono.ReadTodayEditMode(chData)
 			var index int
 			fmt.Scanln(&index)
@@ -168,6 +174,7 @@ func main() {
 			chrono.ReadDays(chData, *daysFlag)
 		} else {
 			if len(os.Args) > 2 {
+				//AddEntryWithTime
 				timeArg := os.Args[2]
 
 				_, formatError := chrono.NormalizeTime(timeArg)
@@ -177,11 +184,13 @@ func main() {
 					writeLogWithTime(chData, userText, timeArg)
 				}
 			} else {
+				//AddEntry
 				writeLog(chData, userText)
 			}
 		}
 
 	} else {
+		//DisplayToday
 		chData, err := chrono.Load(ChronoFilePath)
 		if err != nil && err != chrono.ErrChronoFileNotFound {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
