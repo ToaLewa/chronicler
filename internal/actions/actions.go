@@ -1,5 +1,9 @@
 package actions
 
+func DisplayDays()  {
+	
+}
+
 func DisplayToday() {
 
 }
