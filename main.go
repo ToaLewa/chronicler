@@ -113,8 +113,7 @@ func main() {
 		if *todayFlag {
 			actions.DisplayToday(ChronoFilePath)
 		} else if *monthFlag {
-			//DisplayMonth
-			chrono.ReadMonth(chData)
+			actions.DisplayMonth(ChronoFilePath)
 		} else if *versionFlag {
 			//DisplayVersion
 			fmt.Println(version)
