@@ -43,15 +43,6 @@ const ChronoFileName = "chrono.json"
 var ChronoDir string
 var ChronoFilePath string
 
-func writeLog(chData chrono.ChronoData, userText string) {
-	if chData == nil {
-		chData = chrono.ChronoData{}
-	}
-
-	chrono.AppendLogEntry(chData, userText)
-	chData.Save(ChronoFilePath)
-}
-
 func writeLogWithTime(chData chrono.ChronoData, userText string, time string) {
 	if chData == nil {
 		chData = chrono.ChronoData{}
@@ -183,8 +174,7 @@ func main() {
 					writeLogWithTime(chData, userText, timeArg)
 				}
 			} else {
-				//AddEntry
-				writeLog(chData, userText)
+				actions.AddEntry(ChronoFilePath, userText)
 			}
 		}
 

@@ -43,8 +43,14 @@ func EditEntryTime() {
 
 }
 
-func AddEntry() {
+func AddEntry(filePath string, userText string) {
+	chData := loadFile(filePath)
+	if chData == nil {
+		chData = chrono.ChronoData{}
+	}
 
+	chrono.AppendLogEntry(chData, userText)
+	chData.Save(filePath)
 }
 
 func AddEntryWithTime() {
