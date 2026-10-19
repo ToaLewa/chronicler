@@ -1,11 +1,23 @@
 package actions
 
+import (
+	"chronicler/internal/chrono"
+	"fmt"
+	"os"
+)
+
 func DisplayDays()  {
 	
 }
 
-func DisplayToday() {
-	//can pass file path too for decouoled tests
+func DisplayToday(filePath string) {
+		chData, err := chrono.Load(filePath)
+		if err != nil && err != chrono.ErrChronoFileNotFound {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
+
+		chrono.ReadToday(chData)
 }
 
 func DisplayMonth() {

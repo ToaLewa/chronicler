@@ -191,14 +191,6 @@ func main() {
 		}
 
 	} else {
-		//DisplayToday
-		chData, err := chrono.Load(ChronoFilePath)
-		if err != nil && err != chrono.ErrChronoFileNotFound {
-			fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			os.Exit(1)
-		}
-
-		chrono.ReadToday(chData)
-		actions.DisplayToday()
+		actions.DisplayToday(ChronoFilePath)
 	}
 }
