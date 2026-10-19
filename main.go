@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"chronicler/internal/chrono"
+	"chronicler/internal/actions"
 	"flag"
 	"fmt"
 	"os"
@@ -198,5 +199,6 @@ func main() {
 		}
 
 		chrono.ReadToday(chData)
+		actions.DisplayToday()
 	}
 }
