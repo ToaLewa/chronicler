@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
-	"chronicler/internal/chrono"
 	"chronicler/internal/actions"
+	"chronicler/internal/chrono"
 	"flag"
 	"fmt"
 	"os"
@@ -111,8 +111,7 @@ func main() {
 		}
 
 		if *todayFlag {
-			//DisplayToday
-			chrono.ReadToday(chData)
+			actions.DisplayToday(ChronoFilePath)
 		} else if *monthFlag {
 			//DisplayMonth
 			chrono.ReadMonth(chData)
