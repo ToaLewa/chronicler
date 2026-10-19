@@ -8,14 +8,6 @@ import (
 	"path/filepath"
 )
 
-var version string
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 func hasArg() bool {
 	return len(os.Args) > 1
 }
@@ -36,10 +28,7 @@ func ensureChronoDir() {
 	}
 }
 
-// Consider testing the cli interface and throw errors for the expected bad flags and such.
-// To test, likely need to either override os.Args params, or just pass args to a cli wrapper that knows nothing about args
 func main() {
-	version = "0.5.0"
 	ensureChronoDir()
 	ChronoFilePath = filepath.Join(ChronoDir, ChronoFileName)
 
@@ -73,8 +62,7 @@ func main() {
 		} else if *monthFlag {
 			actions.DisplayMonth(ChronoFilePath)
 		} else if *versionFlag {
-			//DisplayVersion
-			fmt.Println(version)
+			actions.DisplayVersion()
 		} else if *editFlag {
 			actions.EditEntryText(ChronoFilePath)
 		} else if *deleteFlag {
@@ -91,7 +79,6 @@ func main() {
 				actions.AddEntry(ChronoFilePath, userText)
 			}
 		}
-
 	} else {
 		actions.DisplayToday(ChronoFilePath)
 	}

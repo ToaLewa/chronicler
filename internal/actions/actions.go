@@ -17,6 +17,11 @@ func loadFile(filePath string) chrono.ChronoData {
 	return chData
 }
 
+func DisplayVersion() {
+	var version = "0.6.0"
+	fmt.Println(version)
+}
+
 func DisplayDays(filePath string, daysBack int) {
 	chData := loadFile(filePath)
 	chrono.ReadDays(chData, daysBack)
