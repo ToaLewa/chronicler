@@ -120,17 +120,7 @@ func main() {
 			chData.Save(ChronoFilePath)
 			chrono.ReadToday(chData)
 		} else if *deleteFlag {
-			//DeleteEntry
-			chrono.ReadTodayEditMode(chData)
-			var index int
-			fmt.Scanln(&index)
-
-			fmt.Printf("Deleting: ")
-			chrono.PrintTodayEditPick(chData, index)
-
-			chrono.DropTodayEntry(chData, index)
-			chData.Save(ChronoFilePath)
-			chrono.ReadToday(chData)
+			actions.DeleteEntry(ChronoFilePath)
 		} else if *editTimeFlag {
 			//EditEntryTime
 			chrono.ReadTodayEditMode(chData)

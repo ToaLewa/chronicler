@@ -31,8 +31,18 @@ func DisplayMonth(filePath string) {
 	chrono.ReadMonth(chData)
 }
 
-func DeleteEntry() {
+func DeleteEntry(filePath string) {
+	chData := loadFile(filePath)
+	chrono.ReadTodayEditMode(chData)
+	var index int
+	fmt.Scanln(&index)
 
+	fmt.Printf("Deleting: ")
+	chrono.PrintTodayEditPick(chData, index)
+
+	chrono.DropTodayEntry(chData, index)
+	chData.Save(filePath)
+	chrono.ReadToday(chData)
 }
 
 func EditEntryText() {
