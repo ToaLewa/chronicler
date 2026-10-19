@@ -40,8 +40,6 @@ func main() {
 	flag.Parse()
 
 	if hasArg() {
-		userText := os.Args[1]
-
 		switch {
 		case *todayFlag:
 			actions.DisplayToday(ChronoFilePath)
@@ -58,6 +56,8 @@ func main() {
 		case *daysFlag > 0:
 			actions.DisplayDays(ChronoFilePath, *daysFlag)
 		default:
+			userText := os.Args[1]
+
 			if len(os.Args) > 2 {
 				timeArg := os.Args[2]
 				actions.AddEntryWithTime(ChronoFilePath, userText, timeArg)
