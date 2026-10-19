@@ -106,25 +106,7 @@ func main() {
 		} else if *deleteFlag {
 			actions.DeleteEntry(ChronoFilePath)
 		} else if *editTimeFlag {
-			//EditEntryTime
-			chrono.ReadTodayEditMode(chData)
-			var index int
-			fmt.Scanln(&index)
-
-			fmt.Printf("Editing: ")
-			chrono.PrintTodayEditPick(chData, index)
-
-			var saveStr string
-
-			scanner := bufio.NewScanner(os.Stdin)
-
-			if scanner.Scan() {
-				saveStr = scanner.Text()
-			}
-
-			chrono.EditTodayEntryTime(chData, index, saveStr)
-			chData.Save(ChronoFilePath)
-			chrono.ReadToday(chData)
+			actions.EditEntryTime(ChronoFilePath)
 		} else if *daysFlag > 0 {
 			actions.DisplayDays(ChronoFilePath, *daysFlag)
 		} else {
