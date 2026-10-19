@@ -5,7 +5,7 @@ func DisplayDays()  {
 }
 
 func DisplayToday() {
-
+	//can pass file path too for decouoled tests
 }
 
 func DisplayMonth() {
