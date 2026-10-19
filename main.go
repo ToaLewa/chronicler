@@ -18,22 +18,6 @@ func check(e error) {
 	}
 }
 
-type ChronoMarkdownFile struct {
-	name        string
-	frontmatter frontmatter
-}
-
-type frontmatter struct {
-	prev    string
-	journal string
-	next    string
-}
-
-// type content struct {
-// 	header  string
-// 	bullets []Entry
-// }
-
 func hasArg() bool {
 	return len(os.Args) > 1
 }
