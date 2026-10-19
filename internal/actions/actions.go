@@ -44,6 +44,7 @@ func EditEntryTime() {
 }
 
 func AddEntry(filePath string, userText string) {
+	//There may be a bug here after the refactor because of os.Exit
 	chData := loadFile(filePath)
 	if chData == nil {
 		chData = chrono.ChronoData{}
@@ -54,6 +55,7 @@ func AddEntry(filePath string, userText string) {
 }
 
 func AddEntryWithTime(filePath string, userText string, timeText string) {
+	//There may be a bug here after the refactor because of os.Exit
 	chData := loadFile(filePath)
 
 	_, formatError := chrono.NormalizeTime(timeText)
