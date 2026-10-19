@@ -57,21 +57,22 @@ func main() {
 	if hasArg() {
 		userText := os.Args[1]
 
-		if *todayFlag {
+		switch {
+		case *todayFlag:
 			actions.DisplayToday(ChronoFilePath)
-		} else if *monthFlag {
+		case *monthFlag:
 			actions.DisplayMonth(ChronoFilePath)
-		} else if *versionFlag {
+		case *versionFlag:
 			actions.DisplayVersion()
-		} else if *editFlag {
+		case *editFlag:
 			actions.EditEntryText(ChronoFilePath)
-		} else if *deleteFlag {
+		case *deleteFlag:
 			actions.DeleteEntry(ChronoFilePath)
-		} else if *editTimeFlag {
+		case *editTimeFlag:
 			actions.EditEntryTime(ChronoFilePath)
-		} else if *daysFlag > 0 {
+		case *daysFlag > 0:
 			actions.DisplayDays(ChronoFilePath, *daysFlag)
-		} else {
+		default:
 			if len(os.Args) > 2 {
 				timeArg := os.Args[2]
 				actions.AddEntryWithTime(ChronoFilePath, userText, timeArg)
