@@ -46,7 +46,26 @@ func DeleteEntry(filePath string) {
 	chrono.ReadToday(chData)
 }
 
-func EditEntryText() {
+func EditEntryText(filePath string) {
+	chData := loadFile(filePath)
+	chrono.ReadTodayEditMode(chData)
+	var index int
+	fmt.Scanln(&index)
+
+	fmt.Printf("Editing: ")
+	chrono.PrintTodayEditPick(chData, index)
+
+	var saveStr string
+
+	scanner := bufio.NewScanner(os.Stdin)
+
+	if scanner.Scan() {
+		saveStr = scanner.Text()
+	}
+
+	chrono.EditTodayEntryText(chData, index, saveStr)
+	chData.Save(filePath)
+	chrono.ReadToday(chData)
 
 }
 

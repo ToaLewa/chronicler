@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"chronicler/internal/actions"
-	"chronicler/internal/chrono"
 	"flag"
 	"fmt"
 	"os"
@@ -70,12 +68,6 @@ func main() {
 	if hasArg() {
 		userText := os.Args[1]
 
-		chData, err := chrono.Load(ChronoFilePath)
-		if err != nil && err != chrono.ErrChronoFileNotFound {
-			fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			os.Exit(1)
-		}
-
 		if *todayFlag {
 			actions.DisplayToday(ChronoFilePath)
 		} else if *monthFlag {
@@ -84,25 +76,7 @@ func main() {
 			//DisplayVersion
 			fmt.Println(version)
 		} else if *editFlag {
-			//EditEntryText
-			chrono.ReadTodayEditMode(chData)
-			var index int
-			fmt.Scanln(&index)
-
-			fmt.Printf("Editing: ")
-			chrono.PrintTodayEditPick(chData, index)
-
-			var saveStr string
-
-			scanner := bufio.NewScanner(os.Stdin)
-
-			if scanner.Scan() {
-				saveStr = scanner.Text()
-			}
-
-			chrono.EditTodayEntryText(chData, index, saveStr)
-			chData.Save(ChronoFilePath)
-			chrono.ReadToday(chData)
+			actions.EditEntryText(ChronoFilePath)
 		} else if *deleteFlag {
 			actions.DeleteEntry(ChronoFilePath)
 		} else if *editTimeFlag {
