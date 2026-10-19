@@ -8,25 +8,10 @@ import (
 	"path/filepath"
 )
 
-func hasArg() bool {
-	return len(os.Args) > 1
-}
-
 const ChronoFileName = "chrono.json"
 
 var ChronoDir string
 var ChronoFilePath string
-
-func ensureChronoDir() {
-	userDir, _ := os.UserConfigDir()
-	ChronoDir = filepath.Join(userDir, "chrono")
-
-	_, dirErr := os.Stat(ChronoDir)
-
-	if dirErr != nil {
-		os.MkdirAll(ChronoDir, 0755)
-	}
-}
 
 func main() {
 	ensureChronoDir()
@@ -83,4 +68,19 @@ func main() {
 	} else {
 		actions.DisplayToday(ChronoFilePath)
 	}
+}
+
+func ensureChronoDir() {
+	userDir, _ := os.UserConfigDir()
+	ChronoDir = filepath.Join(userDir, "chrono")
+
+	_, dirErr := os.Stat(ChronoDir)
+
+	if dirErr != nil {
+		os.MkdirAll(ChronoDir, 0755)
+	}
+}
+
+func hasArg() bool {
+	return len(os.Args) > 1
 }
