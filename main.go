@@ -170,7 +170,7 @@ func main() {
 			chData.Save(ChronoFilePath)
 			chrono.ReadToday(chData)
 		} else if *daysFlag > 0 {
-			chrono.ReadDays(chData, *daysFlag)
+			actions.DisplayDays(ChronoFilePath, *daysFlag)
 		} else {
 			if len(os.Args) > 2 {
 				//AddEntryWithTime

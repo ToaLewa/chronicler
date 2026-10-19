@@ -16,8 +16,9 @@ func loadFile(filePath string) chrono.ChronoData {
 	return chData
 }
 
-func DisplayDays() {
-
+func DisplayDays(filePath string, daysBack int) {
+	chData := loadFile(filePath)
+	chrono.ReadDays(chData, daysBack)
 }
 
 func DisplayToday(filePath string) {
