@@ -124,6 +124,8 @@ func AddEntryWithTime(filePath string, userText string, timeText string) error {
 
 		chrono.AppendLogEntryWithTime(chData, userText, timeText)
 		chData.Save(filePath)
+
+		chrono.ReadToday(chData)
 	}
 
 	return nil
