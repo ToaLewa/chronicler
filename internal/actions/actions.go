@@ -40,6 +40,7 @@ func DisplayMonth(filePath string) {
 func DeleteEntry(filePath string) {
 	chData := loadFile(filePath)
 	chrono.ReadTodayEditMode(chData)
+	//Bug here. index can be a non int value and it seems to default to 0
 	var index int
 	fmt.Scanln(&index)
 
