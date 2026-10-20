@@ -108,12 +108,13 @@ func AddEntry(filePath string, userText string) {
 	chData.Save(filePath)
 }
 
-func AddEntryWithTime(filePath string, userText string, timeText string) {
+func AddEntryWithTime(filePath string, userText string, timeText string) error {
 	chData := loadFile(filePath)
 
 	_, formatError := chrono.NormalizeTime(timeText)
 	if formatError != nil {
 		fmt.Println(formatError)
+		return formatError
 	} else {
 		if chData == nil {
 			chData = chrono.ChronoData{}
@@ -122,4 +123,6 @@ func AddEntryWithTime(filePath string, userText string, timeText string) {
 		chrono.AppendLogEntryWithTime(chData, userText, timeText)
 		chData.Save(filePath)
 	}
+
+	return nil
 }
