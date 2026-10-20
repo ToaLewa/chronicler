@@ -28,7 +28,6 @@ func (chData ChronoData) Save(filePath string) {
 		fmt.Fprintf(os.Stderr, "error: write %s: %v\n", filePath, err)
 		os.Exit(1)
 	}
-	fmt.Println("Wrote to chronicler file")
 }
 
 type YearLog map[int]MonthLog

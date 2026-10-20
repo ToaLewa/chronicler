@@ -106,6 +106,8 @@ func AddEntry(filePath string, userText string) {
 
 	chrono.AppendLogEntry(chData, userText)
 	chData.Save(filePath)
+
+	chrono.ReadToday(chData)
 }
 
 func AddEntryWithTime(filePath string, userText string, timeText string) error {
