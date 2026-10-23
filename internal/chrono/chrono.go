@@ -137,6 +137,7 @@ func ReadDays(chData ChronoData, daysBack int) {
 		cursorTimePiece := timepieces.Get(cursorDate)
 		dayLog := getMakeDayLog(cursorTimePiece, chData)
 		printDay(dayLog)
+		fmt.Println()
 	}
 
 	ReadToday(chData)
