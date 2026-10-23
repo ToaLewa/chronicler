@@ -150,8 +150,6 @@ func printDay(dayLog DayLog) {
 			entry := dayLog.Entries[i]
 			fmt.Printf("-%s %s\n", entry.Time, entry.Text)
 		}
-
-		fmt.Println()
 	}
 
 }
