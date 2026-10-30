@@ -131,3 +131,33 @@ func AddEntryWithTime(filePath string, userText string, timeText string) error {
 
 	return nil
 }
+
+func AddEntriesWithTimeRange(filePath string, userText string, timeText []string) error {
+	chData := loadFile(filePath)
+
+	var timeError error = nil
+	for _, v := range timeText {
+		_, formatError := chrono.NormalizeTime(v)
+		if formatError != nil {
+			fmt.Println(formatError)
+			timeError = formatError
+		}
+	}
+
+	if timeError != nil {
+		fmt.Println(timeError)
+		return timeError
+	} else {
+		if chData == nil {
+			chData = chrono.ChronoData{}
+		}
+
+		chrono.AppendLogEntryWithTime(chData, "Start: "+userText, timeText[0])
+		chrono.AppendLogEntryWithTime(chData, "End:"+userText, timeText[1])
+		chData.Save(filePath)
+
+		chrono.ReadToday(chData)
+	}
+
+	return nil
+}
