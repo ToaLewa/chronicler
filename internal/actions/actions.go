@@ -18,7 +18,7 @@ func loadFile(filePath string) chrono.ChronoData {
 }
 
 func DisplayVersion() {
-	var version = "0.11.0"
+	var version = "0.12.0"
 	fmt.Println(version)
 }
 
