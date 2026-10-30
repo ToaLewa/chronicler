@@ -56,11 +56,17 @@ func main() {
 		case *daysFlag > 0:
 			actions.DisplayDays(ChronoFilePath, *daysFlag)
 		default:
+			nArg := len(os.Args)
 			userText := os.Args[1]
 
-			if len(os.Args) > 2 {
-				timeArg := os.Args[2]
-				actions.AddEntryWithTime(ChronoFilePath, userText, timeArg)
+			if nArg > 2 {
+				if nArg == 3 {
+					timeArg := os.Args[2]
+					actions.AddEntryWithTime(ChronoFilePath, userText, timeArg)
+				} else {
+					timeArgs := os.Args[2:4]
+					actions.AddEntriesWithTimeRange(ChronoFilePath, userText, timeArgs)
+				}
 			} else {
 				actions.AddEntry(ChronoFilePath, userText)
 			}

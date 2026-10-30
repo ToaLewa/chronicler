@@ -153,7 +153,7 @@ func AddEntriesWithTimeRange(filePath string, userText string, timeText []string
 		}
 
 		chrono.AppendLogEntryWithTime(chData, "Start: "+userText, timeText[0])
-		chrono.AppendLogEntryWithTime(chData, "End:"+userText, timeText[1])
+		chrono.AppendLogEntryWithTime(chData, "End: "+userText, timeText[1])
 		chData.Save(filePath)
 
 		chrono.ReadToday(chData)
