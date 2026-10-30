@@ -34,6 +34,7 @@ func main() {
 	monthFlag := flag.Bool("month", false, "query entries for the current month")
 	daysFlag := flag.Int("days", 0, "query n days back")
 	editFlag := flag.Bool("edit", false, "edit journal")
+	eFlag := flag.Bool("e", false, "edit journal")
 	deleteFlag := flag.Bool("delete", false, "delete journal entry")
 	editTimeFlag := flag.Bool("editTime", false, "edit journal time")
 
@@ -51,7 +52,7 @@ func main() {
 			actions.EditEntryText(ChronoFilePath)
 		case *deleteFlag:
 			actions.DeleteEntry(ChronoFilePath)
-		case *editTimeFlag:
+		case *editTimeFlag || *eFlag:
 			actions.EditEntryTime(ChronoFilePath)
 		case *daysFlag > 0:
 			actions.DisplayDays(ChronoFilePath, *daysFlag)
