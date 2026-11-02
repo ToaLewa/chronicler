@@ -37,7 +37,7 @@ func main() {
 	daysFlag := flag.Int("days", 0, "query n days back")
 	editFlag := flag.Bool("edit", false, "edit journal")
 	jsonFlag := flag.Bool("json", false, "prints the entire journal in json")
-	eFlag := flag.Bool("e", false, "edit journal time")
+	eFlag := flag.Bool("e", false, "edit journal")
 	deleteFlag := flag.Bool("delete", false, "delete journal entry")
 	editTimeFlag := flag.Bool("editTime", false, "edit journal time")
 
@@ -53,11 +53,11 @@ func main() {
 			actions.DisplayMonth(ChronoFilePath)
 		case *versionFlag:
 			actions.DisplayVersion()
-		case *editFlag:
+		case *editFlag || *eFlag:
 			actions.EditEntryText(ChronoFilePath)
 		case *deleteFlag:
 			actions.DeleteEntry(ChronoFilePath)
-		case *editTimeFlag || *eFlag:
+		case *editTimeFlag:
 			actions.EditEntryTime(ChronoFilePath)
 		case *daysFlag > 0:
 			actions.DisplayDays(ChronoFilePath, *daysFlag)
