@@ -27,6 +27,12 @@ func DisplayDays(filePath string, daysBack int) {
 	chrono.ReadDays(chData, daysBack)
 }
 
+// WIP. Needs to be the file in JSON format and not maps.
+func DisplayFullJournal(filePath string) {
+	chData := loadFile(filePath)
+	fmt.Println(chData)
+}
+
 func DisplayToday(filePath string) {
 	chData := loadFile(filePath)
 	chrono.ReadToday(chData)

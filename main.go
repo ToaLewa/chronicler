@@ -36,6 +36,7 @@ func main() {
 	monthFlag := flag.Bool("month", false, "query entries for the current month")
 	daysFlag := flag.Int("days", 0, "query n days back")
 	editFlag := flag.Bool("edit", false, "edit journal")
+	fullFlag := flag.Bool("fullJournal", false, "prints the entire journal")
 	eFlag := flag.Bool("e", false, "edit journal time")
 	deleteFlag := flag.Bool("delete", false, "delete journal entry")
 	editTimeFlag := flag.Bool("editTime", false, "edit journal time")
@@ -46,6 +47,8 @@ func main() {
 		switch {
 		case *todayFlag:
 			actions.DisplayToday(ChronoFilePath)
+		case *fullFlag:
+			actions.DisplayFullJournal(ChronoFilePath)
 		case *monthFlag:
 			actions.DisplayMonth(ChronoFilePath)
 		case *versionFlag:
