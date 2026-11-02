@@ -18,15 +18,17 @@ func main() {
 	ChronoFilePath = filepath.Join(ChronoDir, ChronoFileName)
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: chronicler [options] [text]\n\n")
+		fmt.Fprintf(os.Stderr, "Usage: chronicler [options] [text] [time] [end-time]\n\n")
 		fmt.Fprintf(os.Stderr, "Examples:\n")
 		fmt.Fprintf(os.Stderr, "  chronicler \"wrote project notes\"\n")
+		fmt.Fprintf(os.Stderr, "  chronicler \"team standup\" 09:30\n")
+		fmt.Fprintf(os.Stderr, "  chronicler \"work day\" 09:00 17:00\n")
 		fmt.Fprintf(os.Stderr, "  chronicler --today\n")
 		fmt.Fprintf(os.Stderr, "  chronicler --month\n\n")
 		fmt.Fprintf(os.Stderr, "Options:\n")
 		flag.PrintDefaults()
 		info := "\nInfo:\n  Chronicler journal file stored at " + ChronoFilePath + "\n"
-		fmt.Fprintf(os.Stderr, info)
+		fmt.Fprint(os.Stderr, info)
 	}
 
 	versionFlag := flag.Bool("version", false, "prints version")
@@ -34,7 +36,7 @@ func main() {
 	monthFlag := flag.Bool("month", false, "query entries for the current month")
 	daysFlag := flag.Int("days", 0, "query n days back")
 	editFlag := flag.Bool("edit", false, "edit journal")
-	eFlag := flag.Bool("e", false, "edit journal")
+	eFlag := flag.Bool("e", false, "edit journal time")
 	deleteFlag := flag.Bool("delete", false, "delete journal entry")
 	editTimeFlag := flag.Bool("editTime", false, "edit journal time")
 
