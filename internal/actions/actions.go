@@ -59,6 +59,7 @@ func DeleteEntry(filePath string) {
 }
 
 func EditEntryText(filePath string) {
+	//Bug somewhere in here where original string is being appended to
 	chData := loadFile(filePath)
 	chrono.ReadTodayEditMode(chData)
 	var index int
