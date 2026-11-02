@@ -28,7 +28,7 @@ func DisplayDays(filePath string, daysBack int) {
 }
 
 // WIP. Needs to be the file in JSON format and not maps.
-func DisplayFullJournal(filePath string) {
+func DisplayJSON(filePath string) {
 	chData := loadFile(filePath)
 	fmt.Println(chData)
 }
