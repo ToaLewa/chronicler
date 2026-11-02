@@ -217,11 +217,20 @@ func EditTodayEntryText(chData ChronoData, index int, new string) {
 	dayLog.Entries[index].Text = new
 }
 
-func EditTodayEntryTime(chData ChronoData, index int, new string) {
+func EditTodayEntryTime(chData ChronoData, index int, new string) error {
+
+	_, formatErr := NormalizeTime(new)
+
+	if formatErr != nil {
+		return formatErr
+	}
+
 	current := timepieces.GetCurrent()
 	dayLog := getMakeDayLog(current, chData)
 	dayLog.Entries[index].Time = new
 	slices.SortFunc(dayLog.Entries, compareEntriesByTime)
+
+	return nil
 }
 
 func compareEntriesByTime(a, b Entry) int {

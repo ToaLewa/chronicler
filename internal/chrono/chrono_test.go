@@ -2,6 +2,7 @@ package chrono
 
 import (
 	"chronicler/internal/timepieces"
+	"strings"
 	"testing"
 )
 
@@ -46,5 +47,13 @@ func TestDropTodayEntryPersistsDeletedEntry(t *testing.T) {
 	}
 	if entries[0].Text != "second" {
 		t.Errorf("expected remaining entry to be second, got %q", entries[0].Text)
+	}
+}
+
+func TestEditTodayEntryTimeValidatesTimeString(t *testing.T) {
+	err := EditTodayEntryTime(ChronoData{}, 0, "invalid")
+
+	if !strings.Contains(err.Error(), "does not conform to hh:mm format") {
+		t.Errorf("EditTodayEntryTime did not check invalid timestamp")
 	}
 }
