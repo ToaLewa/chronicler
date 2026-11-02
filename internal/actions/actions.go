@@ -82,7 +82,6 @@ func EditEntryText(filePath string) {
 }
 
 func EditEntryTime(filePath string) {
-	//Does not check for valid time
 	chData := loadFile(filePath)
 
 	chrono.ReadTodayEditMode(chData)
@@ -100,10 +99,14 @@ func EditEntryTime(filePath string) {
 		saveStr = scanner.Text()
 	}
 
-	chrono.EditTodayEntryTime(chData, index, saveStr)
-	chData.Save(filePath)
-	chrono.ReadToday(chData)
+	err := chrono.EditTodayEntryTime(chData, index, saveStr)
 
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		chData.Save(filePath)
+		chrono.ReadToday(chData)
+	}
 }
 
 func AddEntry(filePath string, userText string) {
